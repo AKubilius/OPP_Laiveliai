@@ -29,27 +29,27 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.Ship = new System.Windows.Forms.PictureBox();
             this.moveTimer = new System.Windows.Forms.Timer(this.components);
+            this.Ship = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.Ship)).BeginInit();
             this.SuspendLayout();
-            // 
-            // Ship
-            // 
-            this.Ship.BackColor = System.Drawing.Color.Transparent;
-            this.Ship.Image = global::WindowsFormsApp1.Properties.Resources.right;
-            this.Ship.Location = new System.Drawing.Point(353, 480);
-            this.Ship.Name = "Ship";
-            this.Ship.Size = new System.Drawing.Size(136, 87);
-            this.Ship.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.Ship.TabIndex = 0;
-            this.Ship.TabStop = false;
             // 
             // moveTimer
             // 
             this.moveTimer.Enabled = true;
             this.moveTimer.Interval = 20;
             this.moveTimer.Tick += new System.EventHandler(this.moveTimerEvent);
+            // 
+            // Ship
+            // 
+            this.Ship.BackColor = System.Drawing.Color.Transparent;
+            this.Ship.Image = global::WindowsFormsApp1.Properties.Resources.right;
+            this.Ship.Location = new System.Drawing.Point(372, 250);
+            this.Ship.Name = "Ship";
+            this.Ship.Size = new System.Drawing.Size(136, 87);
+            this.Ship.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.Ship.TabIndex = 0;
+            this.Ship.TabStop = false;
             // 
             // Map
             // 

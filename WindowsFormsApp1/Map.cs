@@ -69,10 +69,14 @@ namespace WindowsFormsApp1
             if (e.KeyCode == Keys.Down)
             {
                 moveDown = true;
+                facing = "down";
+                Ship.Image = Properties.Resources.down;
             }
             if (e.KeyCode == Keys.Up)
             {
                 moveUp = true;
+                facing = "up";
+                Ship.Image = Properties.Resources.up;
             }
         }
 
