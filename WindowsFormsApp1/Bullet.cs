@@ -23,7 +23,7 @@ namespace WindowsFormsApp1
             // this function will add the bullet to the game play
             // it is required to be called from the main class
 
-            bullet.BackColor = System.Drawing.Color.White; // set the colour white for the bullet
+            bullet.BackColor = System.Drawing.Color.Wheat; // set the colour white for the bullet
             bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
             bullet.Tag = "bullet"; // set the tag to bullet
             bullet.Left = bulletLeft; // set bullet left 
