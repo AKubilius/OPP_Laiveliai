@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApp1
+﻿namespace Client
 {
     partial class Map
     {
@@ -43,20 +43,21 @@
             // Ship
             // 
             this.Ship.BackColor = System.Drawing.Color.Transparent;
-            this.Ship.Image = global::WindowsFormsApp1.Properties.Resources.right;
-            this.Ship.Location = new System.Drawing.Point(372, 250);
+            this.Ship.Image = global::Client.Properties.Resources.right;
+            this.Ship.Location = new System.Drawing.Point(428, 287);
             this.Ship.Name = "Ship";
-            this.Ship.Size = new System.Drawing.Size(136, 87);
+            this.Ship.Size = new System.Drawing.Size(56, 36);
             this.Ship.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.Ship.TabIndex = 0;
             this.Ship.TabStop = false;
+            this.Ship.Click += new System.EventHandler(this.Ship_Click);
             // 
             // Map
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.ClientSize = new System.Drawing.Size(984, 961);
+            this.ClientSize = new System.Drawing.Size(984, 637);
             this.Controls.Add(this.Ship);
             this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.Location = new System.Drawing.Point(500, 500);

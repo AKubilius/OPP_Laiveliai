@@ -9,28 +9,31 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace WindowsFormsApp1
+namespace Client
 {
     public partial class Map : Form
     {
-        HubConnection hubConnection;
+        HubConnection _hubConnection;
         
-        public Map()
+        public Map(HubConnection hubConnection)
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.StartPosition = FormStartPosition.CenterScreen;
 
+            _hubConnection = hubConnection;
         }
 
         bool moveRight, moveLeft,moveUp,moveDown;
         int speed = 10;
         string facing = "up";
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
-
+            
         }
 
-        private void moveTimerEvent(object sender, EventArgs e)
+        private async void moveTimerEvent(object sender, EventArgs e)
         {
             if (moveLeft && Ship.Left > 0)
             {
@@ -50,9 +53,23 @@ namespace WindowsFormsApp1
             {
                 Ship.Top += speed;
             }
+
+            await _hubConnection.SendAsync("SendMessage", "laivas", facing);
+
         }
 
-        private void keyisdown(object sender, KeyEventArgs e)
+        private void Ship_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void keyisdown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Left)
             {

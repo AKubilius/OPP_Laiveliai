@@ -1,4 +1,6 @@
-﻿namespace WindowsFormsApp1
+﻿using System.Windows.Forms;
+
+namespace Client
 {
     partial class Menu
     {
@@ -33,13 +35,13 @@
             // 
             // Play
             // 
-            this.Play.Location = new System.Drawing.Point(314, 118);
+            this.Play.Location = new System.Drawing.Point(343, 201);
             this.Play.Name = "Play";
             this.Play.Size = new System.Drawing.Size(75, 23);
             this.Play.TabIndex = 0;
             this.Play.Text = "Play";
             this.Play.UseVisualStyleBackColor = true;
-            this.Play.Click += new System.EventHandler(this.button1_Click);
+            this.Play.Click += new System.EventHandler(this.Play_CLick);
             // 
             // Menu
             // 
@@ -49,6 +51,7 @@
             this.Controls.Add(this.Play);
             this.Name = "Menu";
             this.Text = "Menu";
+            this.Load += new System.EventHandler(this.Menu_Load);
             this.ResumeLayout(false);
 
         }

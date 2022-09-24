@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 
 
-namespace WindowsFormsApp1
+namespace Client
 {
     internal static class Program
     {
@@ -18,7 +18,7 @@ namespace WindowsFormsApp1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Map());
+            Application.Run(new Menu());
         }
     }
 }
