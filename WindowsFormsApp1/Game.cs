@@ -54,7 +54,7 @@ namespace Client
             this.Register.Enabled = false;
             this.Register.Text = "Loading";
 
-            await _hubConnection.SendAsync("RegisterClient", PlayerName.Text);
+            await _hubConnection.SendAsync("RegisterPlayer", PlayerName.Text);
 
             //Map f = new Map(_hubConnection); // This is bad
             //this.Hide(); // Hide the current form.
