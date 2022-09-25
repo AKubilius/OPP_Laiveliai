@@ -35,7 +35,6 @@ namespace Client
 
             _hubConnection.On("NoOpponents", () =>
             {
-
                 this.LobbyStatus.Visible = true;
                 this.LobbyStatus.Text = "Searching for opponent...";
             });
@@ -46,20 +45,31 @@ namespace Client
                 this.LobbyStatus.Visible = true;
                 this.LobbyStatus.Text = $"Found opponent: {name}";
             });
+
+            _hubConnection.On<int>("MatchCreated", (id) =>
+            {
+                Map map = new Map(_hubConnection, id, PlayerName.Text);
+                this.Hide();
+                map.Show();
+            });
+
+
+            _hubConnection.On("NameOccupied", () =>
+            {
+                this.infoLabel.Visible = true;
+                this.infoLabel.Text = "Name already exists!";
+                this.PlayerName.Enabled = true;
+                this.Register.Enabled = true;
+            });
         }
 
         private async void Register_click(object sender, EventArgs e)
         {
+            this.infoLabel.Visible = false;
             this.PlayerName.Enabled = false;
             this.Register.Enabled = false;
-            this.Register.Text = "Loading";
 
             await _hubConnection.SendAsync("RegisterPlayer", PlayerName.Text);
-
-            //Map f = new Map(_hubConnection); // This is bad
-            //this.Hide(); // Hide the current form.
-
-            //f.Show(); // Show it
         }
 
         private async void Menu_Load(object sender, EventArgs e)

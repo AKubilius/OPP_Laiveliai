@@ -1,4 +1,6 @@
-﻿namespace Client
+﻿using System.Collections.Generic;
+
+namespace Client
 {
     partial class Map
     {
@@ -26,12 +28,20 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
+        private void InitializeComponent(int shipCount)
         {
             this.components = new System.ComponentModel.Container();
             this.moveTimer = new System.Windows.Forms.Timer(this.components);
-            this.Ship = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.Ship)).BeginInit();
+            for(int i = 0; i< shipCount; i++)
+            {
+                Ship ship = new Ship("ship" + i);
+                ships.Add(ship);
+                ((System.ComponentModel.ISupportInitialize)(ship.ShipImage)).BeginInit();
+                this.Controls.Add(ship.ShipImage);
+                this.Controls.Add(ship.ShipLabel);
+                ((System.ComponentModel.ISupportInitialize)(ship.ShipImage)).EndInit();
+
+            }
             this.SuspendLayout();
             // 
             // moveTimer
@@ -40,25 +50,12 @@
             this.moveTimer.Interval = 20;
             this.moveTimer.Tick += new System.EventHandler(this.moveTimerEvent);
             // 
-            // Ship
-            // 
-            this.Ship.BackColor = System.Drawing.Color.Transparent;
-            this.Ship.Image = global::Client.Properties.Resources.right;
-            this.Ship.Location = new System.Drawing.Point(428, 287);
-            this.Ship.Name = "Ship";
-            this.Ship.Size = new System.Drawing.Size(56, 36);
-            this.Ship.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.Ship.TabIndex = 0;
-            this.Ship.TabStop = false;
-            this.Ship.Click += new System.EventHandler(this.Ship_Click);
-            // 
             // Map
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.HotTrack;
             this.ClientSize = new System.Drawing.Size(984, 637);
-            this.Controls.Add(this.Ship);
             this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.Location = new System.Drawing.Point(500, 500);
             this.Name = "Map";
@@ -68,14 +65,13 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.keyisdown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.keyisup);
-            ((System.ComponentModel.ISupportInitialize)(this.Ship)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox Ship;
+        private List<Ship> ships = new List<Ship>();
         private System.Windows.Forms.Timer moveTimer;
     }
 }

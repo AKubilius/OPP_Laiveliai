@@ -14,47 +14,70 @@ namespace Client
     public partial class Map : Form
     {
         HubConnection _hubConnection;
-        
-        public Map(HubConnection hubConnection)
+        int _matchId;
+        string _playerName;
+        Ship player;
+        Ship opponent;
+
+        public Map(HubConnection hubConnection, int matchId, string playerName)
         {
-            InitializeComponent();
+            InitializeComponent(2);
+            player = ships[0];
+            player.ShipLabel.Text = playerName;
+            this._matchId = matchId;
+            this._playerName = playerName;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
 
             _hubConnection = hubConnection;
+
+            // for now its 1v1, so ships[1] is opponent and ships[0] is player
+
+            _hubConnection.On<string, string, int, int>("LocationInfo", (shipName, facing, xAxis, yAxis) =>
+            {
+                opponent = ships[1];
+                opponent.ShipImage.Location = new Point(xAxis, yAxis);
+                opponent.ShipLabel.Location = new Point(xAxis, yAxis - 50);
+                opponent.ShipLabel.Text = shipName;
+                opponent.ShipImage.Image = facing.Equals("right") ? Properties.Resources.right : Properties.Resources.left;
+            });
         }
 
-        bool moveRight, moveLeft,moveUp,moveDown;
+        bool moveRight, moveLeft, moveUp, moveDown;
         int speed = 10;
         string facing = "up";
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            
+
         }
 
         private async void moveTimerEvent(object sender, EventArgs e)
         {
-            if (moveLeft && Ship.Left > 0)
+            if (moveLeft && player.ShipImage.Left > 0)
             {
-                Ship.Left -= speed;
+                player.ShipImage.Left -= speed;
+                player.ShipLabel.Left -= speed;
             }
 
-            if (moveRight && Ship.Right < 1000)
+            if (moveRight && player.ShipImage.Right < 1000)
             {
-                Ship.Left += speed;
+                player.ShipImage.Left += speed;
+                player.ShipLabel.Left += speed;
             }
 
-            if (moveUp && Ship.Top > 0)
+            if (moveUp && player.ShipImage.Top > 0)
             {
-                Ship.Top -= speed;
+                player.ShipImage.Top -= speed;
+                player.ShipLabel.Top -= speed;
             }
-            if (moveDown && Ship.Top < 1000)
+            if (moveDown && player.ShipImage.Top < 1000)
             {
-                Ship.Top += speed;
+                player.ShipImage.Top += speed;
+                player.ShipLabel.Top += speed;
             }
 
-            await _hubConnection.SendAsync("SendMessage", "laivas", facing);
+            await _hubConnection.SendAsync("SendLocation", _matchId, _playerName, facing, player.ShipImage.Location.X, player.ShipImage.Location.Y);
 
         }
 
@@ -75,25 +98,23 @@ namespace Client
             {
                 moveLeft = true;
                 facing = "left";
-                Ship.Image = Properties.Resources.left;
+                player.ShipImage.Image = Properties.Resources.left;
             }
             if (e.KeyCode == Keys.Right)
             {
                 moveRight = true;
                 facing = "right";
-                Ship.Image = Properties.Resources.right;
+                player.ShipImage.Image = Properties.Resources.right;
             }
             if (e.KeyCode == Keys.Down)
             {
                 moveDown = true;
                 facing = "down";
-                Ship.Image = Properties.Resources.down;
             }
             if (e.KeyCode == Keys.Up)
             {
                 moveUp = true;
                 facing = "up";
-                Ship.Image = Properties.Resources.up;
             }
         }
 
@@ -115,9 +136,9 @@ namespace Client
             {
                 moveUp = false;
             }
-            if (e.KeyCode == Keys.Space) 
+            if (e.KeyCode == Keys.Space)
             {
-                shoot(facing); 
+                shoot(facing);
             }
 
         }
@@ -127,11 +148,11 @@ namespace Client
 
             Bullet shoot = new Bullet(); // create a new instance of the bullet class
             shoot.direction = direct; // assignment the direction to the bullet
-            shoot.bulletLeft = Ship.Left + (Ship.Width / 2); // place the bullet to left half of the player
-            shoot.bulletTop = Ship.Top + (Ship.Height / 2); // place the bullet on top half of the player
+            shoot.bulletLeft = player.ShipImage.Left + (player.ShipImage.Width / 2); // place the bullet to left half of the player
+            shoot.bulletTop = player.ShipImage.Top + (player.ShipImage.Height / 2); // place the bullet on top half of the player
             shoot.mkBullet(this); // run the function mkbullet from the bullet class. 
         }
 
-      
+
     }
 }
