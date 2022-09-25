@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace Client
 {
@@ -31,6 +32,8 @@ namespace Client
             this.ShipLabel.Size = new System.Drawing.Size(35, 13);
             this.ShipLabel.TabIndex = 0;
             this.ShipLabel.Text = "label2";
+            this.ShipLabel.BorderStyle = BorderStyle.FixedSingle;
+            this.ShipLabel.ForeColor = System.Drawing.Color.White;
         }
 
     }
