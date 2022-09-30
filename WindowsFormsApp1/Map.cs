@@ -6,7 +6,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
+using System.Diagnostics;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Client
@@ -19,15 +21,33 @@ namespace Client
         Ship player;
         Ship opponent;
 
+
+        //next level  
+        private int x()
+        {
+            return Process.GetCurrentProcess().Id / 40;
+        }
+        private int y()
+        {
+            return Process.GetCurrentProcess().Id / 40;
+        }
+        //
+
+
         public Map(HubConnection hubConnection, int matchId, string playerName)
         {
+            
             InitializeComponent(2);
+           
             player = ships[0];
             player.ShipLabel.Text = playerName;
+            player.ShipLabel.Location = new Point(x(), y() - 50);
+            player.ShipImage.Location = new Point(x(), y());
             this._matchId = matchId;
             this._playerName = playerName;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
+
 
             _hubConnection = hubConnection;
 
@@ -47,10 +67,6 @@ namespace Client
         int speed = 10;
         string facing = "up";
 
-        private async void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
 
         private async void moveTimerEvent(object sender, EventArgs e)
         {
@@ -60,7 +76,7 @@ namespace Client
                 player.ShipLabel.Left -= speed;
             }
 
-            if (moveRight && player.ShipImage.Right < 1000)
+            if (moveRight && player.ShipImage.Right < 700)
             {
                 player.ShipImage.Left += speed;
                 player.ShipLabel.Left += speed;
@@ -71,7 +87,7 @@ namespace Client
                 player.ShipImage.Top -= speed;
                 player.ShipLabel.Top -= speed;
             }
-            if (moveDown && player.ShipImage.Top < 1000)
+            if (moveDown && player.ShipImage.Top < 700)
             {
                 player.ShipImage.Top += speed;
                 player.ShipLabel.Top += speed;
@@ -80,18 +96,6 @@ namespace Client
             await _hubConnection.SendAsync("SendLocation", _matchId, _playerName, facing, player.ShipImage.Location.X, player.ShipImage.Location.Y);
 
         }
-
-        private void Ship_Click(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private async void keyisdown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Left)

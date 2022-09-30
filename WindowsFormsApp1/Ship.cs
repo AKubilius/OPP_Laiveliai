@@ -13,6 +13,14 @@ namespace Client
         public PictureBox ShipImage { get; set; }
         public Label ShipLabel { get; set; }
 
+
+        public int CoordinateGenerator()
+        {
+            Random rnd = new Random();
+            int cord = rnd.Next(650);
+            return cord;
+        }
+
         public Ship(string shipName)
         {
             this.ShipImage = new PictureBox();

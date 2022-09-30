@@ -55,14 +55,14 @@ namespace Client
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.ClientSize = new System.Drawing.Size(984, 637);
+            this.ClientSize = new System.Drawing.Size(700, 700);
             this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.Location = new System.Drawing.Point(500, 500);
             this.Name = "Map";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Map";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.Form1_Load);
+           // this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.keyisdown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.keyisup);
             this.ResumeLayout(false);
