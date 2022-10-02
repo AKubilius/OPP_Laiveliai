@@ -35,6 +35,8 @@ namespace Client
             this.Play = new System.Windows.Forms.Button();
             this.LobbyStatus = new System.Windows.Forms.Label();
             this.infoLabel = new System.Windows.Forms.Label();
+            this.gameTitle = new System.Windows.Forms.Label();
+            this.loggedInAs = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Register
@@ -50,7 +52,7 @@ namespace Client
             // PlayerName
             // 
             this.PlayerName.Location = new System.Drawing.Point(316, 98);
-            this.PlayerName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.PlayerName.Margin = new System.Windows.Forms.Padding(2);
             this.PlayerName.Name = "PlayerName";
             this.PlayerName.Size = new System.Drawing.Size(151, 20);
             this.PlayerName.TabIndex = 1;
@@ -58,10 +60,10 @@ namespace Client
             // Play
             // 
             this.Play.Enabled = false;
-            this.Play.Location = new System.Drawing.Point(361, 183);
-            this.Play.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Play.Location = new System.Drawing.Point(361, 149);
+            this.Play.Margin = new System.Windows.Forms.Padding(2);
             this.Play.Name = "Play";
-            this.Play.Size = new System.Drawing.Size(56, 19);
+            this.Play.Size = new System.Drawing.Size(56, 28);
             this.Play.TabIndex = 2;
             this.Play.Text = "Play";
             this.Play.UseVisualStyleBackColor = true;
@@ -71,11 +73,12 @@ namespace Client
             // LobbyStatus
             // 
             this.LobbyStatus.AutoSize = true;
-            this.LobbyStatus.Location = new System.Drawing.Point(371, 204);
+            this.LobbyStatus.Location = new System.Drawing.Point(329, 179);
             this.LobbyStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.LobbyStatus.Name = "LobbyStatus";
-            this.LobbyStatus.Size = new System.Drawing.Size(0, 13);
+            this.LobbyStatus.Size = new System.Drawing.Size(127, 13);
             this.LobbyStatus.TabIndex = 3;
+            this.LobbyStatus.Text = "Searching for opponent...";
             this.LobbyStatus.Visible = false;
             // 
             // infoLabel
@@ -86,11 +89,34 @@ namespace Client
             this.infoLabel.Size = new System.Drawing.Size(0, 13);
             this.infoLabel.TabIndex = 4;
             // 
+            // gameTitle
+            // 
+            this.gameTitle.AutoSize = true;
+            this.gameTitle.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gameTitle.Location = new System.Drawing.Point(308, 18);
+            this.gameTitle.Name = "gameTitle";
+            this.gameTitle.Size = new System.Drawing.Size(167, 45);
+            this.gameTitle.TabIndex = 5;
+            this.gameTitle.Text = "LAIVELIAI";
+            // 
+            // loggedInAs
+            // 
+            this.loggedInAs.AutoSize = true;
+            this.loggedInAs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.loggedInAs.Location = new System.Drawing.Point(343, 67);
+            this.loggedInAs.Name = "loggedInAs";
+            this.loggedInAs.Size = new System.Drawing.Size(88, 13);
+            this.loggedInAs.TabIndex = 6;
+            this.loggedInAs.Text = "Logged in as: ";
+            this.loggedInAs.Visible = false;
+            // 
             // Game
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.loggedInAs);
+            this.Controls.Add(this.gameTitle);
             this.Controls.Add(this.infoLabel);
             this.Controls.Add(this.LobbyStatus);
             this.Controls.Add(this.Play);
@@ -111,5 +137,7 @@ namespace Client
         private Button Play;
         private Label LobbyStatus;
         private Label infoLabel;
+        private Label gameTitle;
+        private Label loggedInAs;
     }
 }

@@ -20,6 +20,8 @@ namespace Client
         string _playerName;
         Ship player;
         Ship opponent;
+        Game _mainMenu;
+        bool _isForcedToLeave;
 
 
         //next level  
@@ -34,9 +36,12 @@ namespace Client
         //
 
 
-        public Map(HubConnection hubConnection, int matchId, string playerName)
+        public Map(HubConnection hubConnection, int matchId, string playerName, Game mainMenu)
         {
-            
+            this.FormClosing += new FormClosingEventHandler(Map_Closing);
+            _isForcedToLeave = false;
+            _mainMenu = mainMenu;
+
             InitializeComponent(2);
            
             player = ships[0];
@@ -60,6 +65,12 @@ namespace Client
                 opponent.ShipLabel.Location = new Point(xAxis, yAxis - 50);
                 opponent.ShipLabel.Text = shipName;
                 opponent.ShipImage.Image = facing.Equals("right") ? Properties.Resources.right : Properties.Resources.left;
+            });
+
+            _hubConnection.On("LeaveMatch", () =>
+            {
+                _isForcedToLeave = true;
+                this.Close();
             });
         }
 
@@ -157,6 +168,14 @@ namespace Client
             shoot.mkBullet(this); // run the function mkbullet from the bullet class. 
         }
 
+        private async void Map_Closing(object sender, CancelEventArgs e)
+        {
+            if (!_isForcedToLeave)
+            {
+                await _hubConnection.SendAsync("LeftMatch");
+            }
 
+            _mainMenu.Visible = true;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Client
 {
@@ -15,6 +16,8 @@ namespace Client
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
 
+            this.FormClosing += new FormClosingEventHandler(Game_Closing);
+
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl("https://localhost:7057/game")
                 .WithAutomaticReconnect()
@@ -22,18 +25,18 @@ namespace Client
 
             _hubConnection.On("RegisterComplete", () =>
             {
-                this.Register.Text = "Registered";
-            });
+                this.Register.Visible = false;
+                this.PlayerName.Visible = false;
 
-            _hubConnection.On("RegisterComplete", () =>
-            {
-                this.Register.Text = "Registered";
+                this.loggedInAs.Text = "Logged in as: " + PlayerName.Text;
+                this.loggedInAs.Visible = true;
+
 
                 this.Play.Visible = true;
                 this.Play.Enabled = true;
             });
 
-            _hubConnection.On("NoOpponents", () =>
+            _hubConnection.On("InMatchmakingQueue", () =>
             {
                 this.LobbyStatus.Visible = true;
                 this.LobbyStatus.Text = "Searching for opponent...";
@@ -48,7 +51,9 @@ namespace Client
 
             _hubConnection.On<int>("MatchCreated", (id) =>
             {
-                Map map = new Map(_hubConnection, id, PlayerName.Text);
+                Map map = new Map(_hubConnection, id, PlayerName.Text, this);
+                this.LobbyStatus.Visible = false;
+                this.Play.Enabled = true;
                 this.Hide();
                 map.Show();
             });
@@ -82,6 +87,11 @@ namespace Client
             this.Play.Enabled = false;
 
             await _hubConnection.SendAsync("FindOpponent");
+        }
+
+        private async void Game_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            await _hubConnection.SendAsync("LogoutPlayer");
         }
     }
 }
