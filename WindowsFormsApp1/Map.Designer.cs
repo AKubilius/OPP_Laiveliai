@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Client
 {
@@ -40,7 +41,7 @@ namespace Client
                 this.Controls.Add(ship.ShipImage);
                 this.Controls.Add(ship.ShipLabel);
                 ((System.ComponentModel.ISupportInitialize)(ship.ShipImage)).EndInit();
-
+                
             }
             this.SuspendLayout();
             // 

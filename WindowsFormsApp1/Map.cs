@@ -23,7 +23,6 @@ namespace Client
         Game _mainMenu;
         bool _isForcedToLeave;
 
-
         //next level  
         private int x()
         {
@@ -36,7 +35,7 @@ namespace Client
         //
 
 
-        public Map(HubConnection hubConnection, int matchId, string playerName, Game mainMenu)
+        public Map(HubConnection hubConnection, int matchId, string playerName, int startingId, int randomY, Game mainMenu)
         {
             this.FormClosing += new FormClosingEventHandler(Map_Closing);
             _isForcedToLeave = false;
@@ -46,8 +45,9 @@ namespace Client
            
             player = ships[0];
             player.ShipLabel.Text = playerName;
-            player.ShipLabel.Location = new Point(x(), y() - 50);
-            player.ShipImage.Location = new Point(x(), y());
+            player.ShipImage.Location = new Point(100 + (startingId * 500), randomY);
+            player.ShipLabel.Location = new Point(player.ShipImage.Location.X, player.ShipImage.Location.Y - 50);
+
             this._matchId = matchId;
             this._playerName = playerName;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;

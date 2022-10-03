@@ -49,9 +49,9 @@ namespace Client
                 this.LobbyStatus.Text = $"Found opponent: {name}";
             });
 
-            _hubConnection.On<int>("MatchCreated", (id) =>
+            _hubConnection.On<int, int, int>("MatchCreated", (id, startingId, randomY) =>
             {
-                Map map = new Map(_hubConnection, id, PlayerName.Text, this);
+                Map map = new Map(_hubConnection, id, PlayerName.Text, startingId, randomY, this);
                 this.LobbyStatus.Visible = false;
                 this.Play.Enabled = true;
                 this.Hide();
