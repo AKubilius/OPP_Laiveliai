@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -14,11 +15,19 @@ namespace Client
         public int bulletLeft; // create a new public integer
         public int bulletTop; // create a new public integer
 
-        public void mkBullet(Form form)
+        public int _matchId;
+        public HubConnection _hubConnection;
+        public string _playerName;
+        public int _bulletId;
+
+        public void mkBullet(Form form, int matchId, string playerName, HubConnection hubConnection, int bulletId)
         {
             // this function will add the bullet to the game play
             // it is required to be called from the main class
-
+            _bulletId = bulletId;
+            _hubConnection = hubConnection;
+            _playerName = playerName;
+            _matchId = matchId;
             bullet.BackColor = System.Drawing.Color.Wheat; // set the colour white for the bullet
             bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
             bullet.Tag = "bullet"; // set the tag to bullet
@@ -32,7 +41,7 @@ namespace Client
             tm.Start(); // start the timer
         }
 
-        public void tm_Tick(object sender, EventArgs e)
+        public async void tm_Tick(object sender, EventArgs e)
         {
             // if direction equals to left
             if (direction == "left")
@@ -54,8 +63,9 @@ namespace Client
             {
                 bullet.Top += speed; // move the bullet bottom of the screen
             }
+            await _hubConnection.SendAsync("SendBulletLocation", _matchId, _playerName, _bulletId ,bullet.Location.X, bullet.Location.Y);
 
-            if (bullet.Left < 0 || bullet.Left > 1000 || bullet.Top < 0 || bullet.Top > 1000)
+            if (bullet.Left < -50 || bullet.Left > 1000 || bullet.Top < 0 || bullet.Top > 1000)
             {
                 tm.Stop(); // stop the timer
                 tm.Dispose(); // dispose the timer event and component from the program

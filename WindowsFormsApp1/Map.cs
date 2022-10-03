@@ -22,6 +22,7 @@ namespace Client
         Ship opponent;
         Game _mainMenu;
         bool _isForcedToLeave;
+        Dictionary<int, PictureBox> _bullets;
 
         //next level  
         private int x()
@@ -40,6 +41,7 @@ namespace Client
             this.FormClosing += new FormClosingEventHandler(Map_Closing);
             _isForcedToLeave = false;
             _mainMenu = mainMenu;
+            _bullets = new Dictionary<int, PictureBox>();
 
             InitializeComponent(2);
            
@@ -65,6 +67,23 @@ namespace Client
                 opponent.ShipLabel.Location = new Point(xAxis, yAxis - 50);
                 opponent.ShipLabel.Text = shipName;
                 opponent.ShipImage.Image = facing.Equals("right") ? Properties.Resources.right : Properties.Resources.left;
+            });
+
+
+            _hubConnection.On<int, int, int>("BulletLocationInfo", ( bulletId, xAxis, yAxis) =>
+            {
+                if (!_bullets.ContainsKey(bulletId))
+                {
+                    PictureBox bullet = new PictureBox();
+                    bullet.BackColor = System.Drawing.Color.Wheat; // set the colour white for the bullet
+                    bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
+                    bullet.Tag = "bullet"; // set the tag to bullet
+                    bullet.BringToFront(); // bring the bullet to front of other objects
+                    this.Controls.Add(bullet); // add the bullet to the screen
+                    _bullets[bulletId] = bullet;
+                }
+                PictureBox currentBullet = _bullets[bulletId];
+                currentBullet.Location = new Point(xAxis, yAxis);
             });
 
             _hubConnection.On("LeaveMatch", () =>
@@ -165,7 +184,7 @@ namespace Client
             shoot.direction = direct; // assignment the direction to the bullet
             shoot.bulletLeft = player.ShipImage.Left + (player.ShipImage.Width / 2); // place the bullet to left half of the player
             shoot.bulletTop = player.ShipImage.Top + (player.ShipImage.Height / 2); // place the bullet on top half of the player
-            shoot.mkBullet(this); // run the function mkbullet from the bullet class. 
+            shoot.mkBullet(this, _matchId, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode()); // run the function mkbullet from the bullet class. 
         }
 
         private async void Map_Closing(object sender, CancelEventArgs e)
