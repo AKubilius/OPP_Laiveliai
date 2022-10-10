@@ -19,7 +19,7 @@ namespace Client
             this.FormClosing += new FormClosingEventHandler(Game_Closing);
 
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7057/game")
+                .WithUrl("https://localhost:7150/game")
                 .WithAutomaticReconnect()
                 .Build();
 

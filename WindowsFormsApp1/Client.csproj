@@ -189,7 +189,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bullet.cs" />
-    <Compile Include="Ship.cs" />
     <Compile Include="Map.cs">
       <SubType>Form</SubType>
     </Compile>
