@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using ClassLib
+﻿using ClassLib.Units.Ship;
 
 namespace Client
 {
@@ -38,10 +36,10 @@ namespace Client
             {
                 Ship ship = new Ship("ship" + i);
                 ships.Add(ship);
-                ((System.ComponentModel.ISupportInitialize)(ship.ShipImage)).BeginInit();
-                this.Controls.Add(ship.ShipImage);
-                this.Controls.Add(ship.ShipLabel);
-                ((System.ComponentModel.ISupportInitialize)(ship.ShipImage)).EndInit();
+                ((System.ComponentModel.ISupportInitialize)(ship.Image)).BeginInit();
+                this.Controls.Add(ship.Image);
+                this.Controls.Add(ship.Label);
+                ((System.ComponentModel.ISupportInitialize)(ship.Image)).EndInit();
                 
             }
             this.SuspendLayout();

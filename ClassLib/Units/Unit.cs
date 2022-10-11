@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace ClassLib.Units
 {
-    internal class Unit
+    public class Unit
     {
         public PictureBox Image { get; set; }
         public Label Label { get; set; }

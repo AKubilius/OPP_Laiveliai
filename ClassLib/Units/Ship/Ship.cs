@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace ClassLib.Units.Ship
 {
-    internal class Ship : Unit
+    public class Ship : Unit
     {
         public Ship(string shipName)
         {
             this.Image = new PictureBox();
             this.Image.BackColor = System.Drawing.Color.Transparent;
-            this.Image.Image =  Properties.Resources.shipRight;
             this.Image.Name = shipName;
             this.Image.Size = new System.Drawing.Size(56, 36);
             this.Image.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
