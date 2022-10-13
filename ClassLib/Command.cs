@@ -45,15 +45,13 @@ namespace ClassLib
         public struct Matchmaking
         {
             public string Response { get; set; }
-            public int MatchID { get; set; }
             public int StartingID { get; set; }
             public int StartingYPos { get; set; }
 
 
-            public Matchmaking(string response, int matchID, int startingID, int startingYPos)
+            public Matchmaking(string response, int startingID, int startingYPos)
             {
                 Response = response;
-                MatchID = matchID;
                 StartingID = startingID;
                 StartingYPos = startingYPos;
             }
