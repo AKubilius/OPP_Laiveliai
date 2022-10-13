@@ -26,9 +26,17 @@ namespace Server.Hubs
                 case "Register":
                     await RegisterPlayer(cmd);
                     break;
-
+                case "MatchEvents":
+                    await MatchEvents(cmd, Context.ConnectionId);
+                    break;
                 case "Matchmaking":
                     await Matchmaking(cmd);
+                    break;
+                case "Location":
+                    await Location(cmd);
+                    break;
+                case "BulletLocation":
+                    await BulletLocation(cmd);
                     break;
             }
         }
@@ -75,94 +83,105 @@ namespace Server.Hubs
 
         }
 
-        //public void LogoutPlayer()
-        //{
-        //    lock (_lockerRegisteredPlayers)
-        //    {
-        //        var player = _registeredPlayers.First(x => x.ConnectionId == Context.ConnectionId);
+        public void LogoutPlayer()
+        {
+            lock (_lockerRegisteredPlayers)
+            {
+                var player = _registeredPlayers.First(x => x.ConnectionId == Context.ConnectionId);
 
-        //        if (player != null)
-        //        {
-        //            lock (_lockerMatchmaking)
-        //            {
-        //                _playersInMatchmaking.Remove(player);
-        //            }
-        //            _registeredPlayers.Remove(player);
-        //        }
-        //    }
-        //}
+                if (player != null)
+                {
+                    lock (_lockerMatchmaking)
+                    {
+                        _playersInMatchmaking.Remove(player);
+                    }
+                    _registeredPlayers.Remove(player);
+                }
+            }
+        }
 
-        //public async void LeftMatch()
-        //{
-        //    Match match = null;
-        //    lock (_matches)
-        //    {
-        //        match = _matches.First(x => x.Players.Any(y => y.ConnectionId == Context.ConnectionId));
+        public async Task MatchEvents(Command cmd, string connectionID)
+        {
+            MatchEvents matchEvents = JsonConvert.DeserializeObject<MatchEvents>(cmd.Content);
+            Match match = null;
+            lock (_matches)
+            {
+                match = _matches.First(x => x.Players.Any(y => y.ConnectionId == connectionID));
 
-        //        if (match != null)
-        //        {
-        //            _matches.Remove(match);
-        //        }
-        //    }
+                if (match != null)
+                {
+                    _matches.Remove(match);
+                }
+            }
 
-        //    if (match != null)
-        //    {
-        //        foreach (Player player in match.Players)
-        //        {
-        //            if (player.ConnectionId != Context.ConnectionId)
-        //                await Clients.Client(player.ConnectionId).SendAsync("LeaveMatch");
-        //        }
-        //    }
-        //}
+            if (match != null)
+            {
+                foreach (Player player in match.Players)
+                {
+                    if (player.ConnectionId != Context.ConnectionId)
+                        await Clients.Client(player.ConnectionId).SendAsync("LeaveMatch");
+                }
+            }
+        }
 
-        //public async void SendLocation(int matchId, string playerName, string facing, int xAxis, int yAxis)
-        //{
-        //    Match match = null;
-        //    lock (_lockerMatches)
-        //    {
+        public async Task Location(Command cmd)
+        {
+            Location location = JsonConvert.DeserializeObject<Location>(cmd.Content);
+            Match match = null;
+            lock (_lockerMatches)
+            {
 
-        //        foreach (Match m in _matches)
-        //        {
-        //            foreach (Player p in m.Players)
-        //            {
-        //                if (p.Name.Equals(playerName))
-        //                {
-        //                    match = m;
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    Player opponent = null;
-        //    if (match != null)
-        //        opponent = match.Players.First(x => x.Name != playerName);
-        //    if (opponent != null)
-        //        await Clients.Client(opponent.ConnectionId).SendAsync("LocationInfo", playerName, facing, xAxis, yAxis);
-        //}
-        //public async void SendBulletLocation(int matchId, string playerName, int bulletId, int xAxis, int yAxis)
-        //{
-        //    Match match = null;
-        //    lock (_lockerMatches)
-        //    {
+                foreach (Match m in _matches)
+                {
+                    foreach (Player p in m.Players)
+                    {
+                        if (p.Name.Equals(location.ShipName))
+                        {
+                            match = m;
+                            break;
+                        }
+                    }
+                }
+            }
+            Player opponent = null;
+            if (match != null)
+                opponent = match.Players.First(x => x.Name != location.ShipName);
+            if (opponent != null)
+            {
+                location.Response = "UpdateLocation";
+                Command answer = new Command("Location", JsonConvert.SerializeObject(location));
+                await SendAsync(answer, opponent.ConnectionId);
+            }
+        }
+        public async Task BulletLocation(Command cmd)
+        {
+            BulletLocation location = JsonConvert.DeserializeObject<BulletLocation>(cmd.Content);
+            Match match = null;
+            lock (_lockerMatches)
+            {
 
-        //        foreach (Match m in _matches)
-        //        {
-        //            foreach (Player p in m.Players)
-        //            {
-        //                if (p.Name.Equals(playerName))
-        //                {
-        //                    match = m;
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    Player opponent = null;
-        //    if (match != null)
-        //        opponent = match.Players.First(x => x.Name != playerName);
-        //    if (opponent != null)
-        //        await Clients.Client(opponent.ConnectionId).SendAsync("BulletLocationInfo", bulletId, xAxis, yAxis);
-        //}
+                foreach (Match m in _matches)
+                {
+                    foreach (Player p in m.Players)
+                    {
+                        if (p.Name.Equals(location.ShipName))
+                        {
+                            match = m;
+                            break;
+                        }
+                    }
+                }
+            }
+            Player opponent = null;
+            if (match != null)
+                opponent = match.Players.First(x => x.Name != location.ShipName);
+            if (opponent != null)
+            {
+                location.Response = "UpdateBulletLocation";
+                Command answer = new Command("BulletLocation", JsonConvert.SerializeObject(location));
+                await SendAsync(answer, opponent.ConnectionId);
+            }
+        }
 
         public async Task Matchmaking(Command cmd)
         {

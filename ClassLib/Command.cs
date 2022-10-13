@@ -29,6 +29,19 @@ namespace ClassLib
             }
         }
 
+        public struct MatchEvents
+        {
+            public string Response { get; set; }
+            public int MatchID { get; set; }
+
+
+            public MatchEvents(string response, int matchID)
+            {
+                Response = response;
+                MatchID = matchID;
+            }
+        }
+
         public struct Matchmaking
         {
             public string Response { get; set; }
@@ -43,6 +56,57 @@ namespace ClassLib
                 MatchID = matchID;
                 StartingID = startingID;
                 StartingYPos = startingYPos;
+            }
+        }
+
+        public struct Location
+        {
+            public string Response { get; set; }
+            
+            public int MatchID { get; set; }
+            public string ShipName { get; set; }
+            public string Facing { get; set; }
+
+            public int XAxis { get; set; }
+
+            public int YAxis { get; set; }
+
+
+            public Location(string response, int matchID, string shipName, string facing, int xAxis, int yAxis)
+            {
+                Response = response;
+                MatchID = matchID;
+                ShipName = shipName;
+                Facing = facing;
+                XAxis = xAxis;
+                YAxis = yAxis;
+            }
+        }
+
+
+        public struct BulletLocation
+        {
+            public string Response { get; set; }
+
+            public int MatchID { get; set; }
+            public string ShipName { get; set; }
+
+
+            public int BulletID { get; set; }
+
+            public int XAxis { get; set; }
+
+            public int YAxis { get; set; }
+
+
+            public BulletLocation(string response, int matchID, string shipName, int bulletID, int xAxis, int yAxis)
+            {
+                Response = response;
+                MatchID = matchID;
+                ShipName = shipName;
+                BulletID = bulletID;
+                XAxis = xAxis;
+                YAxis = yAxis;
             }
         }
     }

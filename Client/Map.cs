@@ -3,6 +3,9 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.SignalR.Client;
 using ClassLib.Units.Ship;
 using ClassLib.Units.Bullet;
+using ClassLib;
+using static ClassLib.Command;
+using Newtonsoft.Json;
 
 namespace Client
 {
@@ -52,56 +55,90 @@ namespace Client
 
             _hubConnection = hubConnection;
 
-            // for now its 1v1, so ships[1] is opponent and ships[0] is player
 
-            _hubConnection.On<string, string, int, int>("LocationInfo", (shipName, facing, xAxis, yAxis) =>
+            _hubConnection.On<Command>("Message", (cmd) =>
             {
-                opponent = ships[1];
-                opponent.Image.Location = new Point(xAxis, yAxis);
-                opponent.Label.Location = new Point(xAxis, yAxis - 50);
-                opponent.Label.Text = shipName;
-                switch (facing)
+                switch (cmd.Name)
                 {
-                    case "right":
-                        opponent.Image.Image = Properties.Resources.shipRight;
+                    case "Location":
+                        UpdateLocation(cmd);
                         break;
-                    case "left":
-                        opponent.Image.Image = Properties.Resources.shipLeft;
+                    case "BulletLocation":
+                        UpdateBulletLocation(cmd);
                         break;
-                    case "up":
-                        opponent.Image.Image = Properties.Resources.shipUp;
-                        break;
-                    case "down":
-                        opponent.Image.Image = Properties.Resources.shipDown;
-                        break;
-                    default:
+                    case "MatchEvents":
+                        MatchEvents(cmd);
                         break;
                 }
-                opponent.Image.Image = facing.Equals("right") ? Properties.Resources.shipRight : Properties.Resources.shipLeft;
             });
+        }
 
+        private async Task SendAsync(Command cmd)
+        {
+            await _hubConnection.SendAsync("Message", cmd);
+        }
 
-            _hubConnection.On<int, int, int>("BulletLocationInfo", (bulletId, xAxis, yAxis) =>
+        public void UpdateBulletLocation(Command cmd)
+        {
+            BulletLocation bulletLocation = JsonConvert.DeserializeObject<BulletLocation>(cmd.Content);
+
+            if (!_bullets.ContainsKey(bulletLocation.BulletID))
             {
-                if (!_bullets.ContainsKey(bulletId))
-                {
-                    PictureBox bullet = new PictureBox();
-                    bullet.BackColor = System.Drawing.Color.Wheat; // set the colour white for the bullet
-                    bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
-                    bullet.Tag = "bullet"; // set the tag to bullet
-                    bullet.BringToFront(); // bring the bullet to front of other objects
-                    this.Controls.Add(bullet); // add the bullet to the screen
-                    _bullets[bulletId] = bullet;
-                }
-                PictureBox currentBullet = _bullets[bulletId];
-                currentBullet.Location = new Point(xAxis, yAxis);
-            });
+                PictureBox bullet = new PictureBox();
+                bullet.BackColor = System.Drawing.Color.Wheat; // set the colour white for the bullet
+                bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
+                bullet.Tag = "bullet"; // set the tag to bullet
+                bullet.BringToFront(); // bring the bullet to front of other objects
+                this.Controls.Add(bullet); // add the bullet to the screen
+                _bullets[bulletLocation.BulletID] = bullet;
+            }
+            PictureBox currentBullet = _bullets[bulletLocation.BulletID];
+            currentBullet.Location = new Point(bulletLocation.XAxis, bulletLocation.YAxis);
+        }
 
-            _hubConnection.On("LeaveMatch", () =>
+        public void UpdateLocation(Command cmd)
+        {
+            Location location = JsonConvert.DeserializeObject<Location>(cmd.Content);
+
+            switch (location.Response)
             {
-                _isForcedToLeave = true;
-                this.Close();
-            });
+                case "UpdateLocation":
+                    opponent = ships[1];
+                    opponent.Image.Image = Properties.Resources.shipRight;
+                    opponent.Image.Location = new Point(location.XAxis, location.YAxis);
+                    opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
+                    opponent.Label.Text = location.ShipName;
+                    switch (location.Facing)
+                    {
+                        case "right":
+                            opponent.Image.Image = Properties.Resources.shipRight;
+                            break;
+                        case "left":
+                            opponent.Image.Image = Properties.Resources.shipLeft;
+                            break;
+                        case "up":
+                            opponent.Image.Image = Properties.Resources.shipUp;
+                            break;
+                        case "down":
+                            opponent.Image.Image = Properties.Resources.shipDown;
+                            break;
+                        default:
+                            break;
+                    }
+                    opponent.Image.Image = location.Facing.Equals("right") ? Properties.Resources.shipRight : Properties.Resources.shipLeft;
+                    break;
+            }
+        }
+        public void MatchEvents(Command cmd)
+        {
+            switch (cmd.Name)
+            {
+                case "LeaveMatch":
+                    _isForcedToLeave = true;
+                    this.Close();
+                    break;
+            }
+
         }
 
         bool moveRight, moveLeft, moveUp, moveDown;
@@ -134,7 +171,10 @@ namespace Client
                 player.Label.Top += speed;
             }
 
-            await _hubConnection.SendAsync("SendLocation", _matchId, _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
+
+            Location location = new Location("MovePlayer", _matchId, _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
+            Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
+            await SendAsync(cmd);
 
         }
         private async void keyisdown(object sender, KeyEventArgs e)
@@ -155,13 +195,11 @@ namespace Client
             {
                 moveDown = true;
                 facing = "down";
-                player.Image.Image = Properties.Resources.shipDown;
             }
             if (e.KeyCode == Keys.Up)
             {
                 moveUp = true;
                 facing = "up";
-                player.Image.Image = Properties.Resources.shipUp;
             }
         }
 
@@ -198,13 +236,16 @@ namespace Client
             shoot.bulletLeft = player.Image.Left + (player.Image.Width / 2); // place the bullet to left half of the player
             shoot.bulletTop = player.Image.Top + (player.Image.Height / 2); // place the bullet on top half of the player
             shoot.mkBullet(this, _matchId, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode()); // run the function mkbullet from the bullet class. 
+
         }
 
         private async void Map_Closing(object sender, CancelEventArgs e)
         {
             if (!_isForcedToLeave)
             {
-                await _hubConnection.SendAsync("LeftMatch");
+                MatchEvents match = new MatchEvents("LeftMatch", _matchId);
+                Command cmd = new Command("MatchEvents", JsonConvert.SerializeObject(match));
+                await SendAsync(cmd);
             }
 
             _mainMenu.Visible = true;

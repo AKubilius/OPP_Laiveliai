@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
 using System.Drawing;
 using System.Windows.Forms;
+using static ClassLib.Command;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ClassLib.Units.Bullet
@@ -40,6 +42,10 @@ namespace ClassLib.Units.Bullet
             tm.Tick += new EventHandler(tm_Tick); // assignment the timer with an event
             tm.Start(); // start the timer
         }
+        private async Task SendAsync(Command cmd)
+        {
+            await _hubConnection.SendAsync("Message", cmd);
+        }
 
         public async void tm_Tick(object sender, EventArgs e)
         {
@@ -63,7 +69,9 @@ namespace ClassLib.Units.Bullet
             {
                 bullet.Top += speed; // move the bullet bottom of the screen
             }
-            await _hubConnection.SendAsync("SendBulletLocation", _matchId, _playerName, _bulletId, bullet.Location.X, bullet.Location.Y);
+            BulletLocation location = new BulletLocation("UpdateBulletLocation", _matchId, _playerName, _bulletId, bullet.Location.X, bullet.Location.Y);
+            Command cmd = new Command("BulletLocation", JsonConvert.SerializeObject(location));
+            await SendAsync(cmd);
 
             if (bullet.Left < -50 || bullet.Left > 1000 || bullet.Top < 0 || bullet.Top > 1000)
             {
