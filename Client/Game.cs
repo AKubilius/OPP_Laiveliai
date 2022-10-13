@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using ClassLib;
+using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
+using System;
+using static ClassLib.Command;
 
 namespace Client
 {
@@ -20,49 +24,71 @@ namespace Client
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On("RegisterComplete", () =>
+            _hubConnection.On<Command>("Message", (cmd) =>
             {
-                this.Register.Visible = false;
-                this.PlayerName.Visible = false;
-
-                this.loggedInAs.Text = "Logged in as: " + PlayerName.Text;
-                this.loggedInAs.Visible = true;
-
-
-                this.Play.Visible = true;
-                this.Play.Enabled = true;
+                switch (cmd.Name)
+                {
+                    case "Register":
+                        RegisterPlayer(cmd);
+                        break;
+                    case "Matchmaking":
+                        Matchmaking(cmd);
+                        break;
+                }
             });
+        }
 
-            _hubConnection.On("InMatchmakingQueue", () =>
+        public void RegisterPlayer(Command cmd)
+        {
+            Register register = JsonConvert.DeserializeObject<Register>(cmd.Content);
+
+            switch (register.Response)
             {
-                this.LobbyStatus.Visible = true;
-                this.LobbyStatus.Text = "Searching for opponent...";
-            });
+                case "RegisterComplete":
+                    this.Register.Visible = false;
+                    this.PlayerName.Visible = false;
 
-            _hubConnection.On<string>("FoundOpponent", (name) =>
+                    this.loggedInAs.Text = "Logged in as: " + PlayerName.Text;
+                    this.loggedInAs.Visible = true;
+
+
+                    this.Play.Visible = true;
+                    this.Play.Enabled = true;
+                    break;
+
+                case "NameOccupied":
+                    this.infoLabel.Visible = true;
+                    this.infoLabel.Text = "Name already exists!";
+                    this.PlayerName.Enabled = true;
+                    this.Register.Enabled = true;
+                    break;
+            }
+        }
+
+        public void Matchmaking(Command cmd)
+        {
+            Matchmaking matchmaking = JsonConvert.DeserializeObject<Matchmaking>(cmd.Content);
+
+            switch (matchmaking.Response)
             {
+                case "InMatchmakingQueue":
+                    this.LobbyStatus.Visible = true;
+                    this.LobbyStatus.Text = "Searching for opponent...";
+                    break;
 
-                this.LobbyStatus.Visible = true;
-                this.LobbyStatus.Text = $"Found opponent: {name}";
-            });
+                case "MatchCreated":
+                    Map map = new Map(_hubConnection, matchmaking.MatchID, PlayerName.Text, matchmaking.StartingID, matchmaking.StartingYPos, this);
+                    this.LobbyStatus.Visible = false;
+                    this.Play.Enabled = true;
+                    this.Hide();
+                    map.Show();
+                    break;
+            }
+        }
 
-            _hubConnection.On<int, int, int>("MatchCreated", (id, startingId, randomY) =>
-            {
-                Map map = new Map(_hubConnection, id, PlayerName.Text, startingId, randomY, this);
-                this.LobbyStatus.Visible = false;
-                this.Play.Enabled = true;
-                this.Hide();
-                map.Show();
-            });
-
-
-            _hubConnection.On("NameOccupied", () =>
-            {
-                this.infoLabel.Visible = true;
-                this.infoLabel.Text = "Name already exists!";
-                this.PlayerName.Enabled = true;
-                this.Register.Enabled = true;
-            });
+        private async Task SendAsync(Command cmd)
+        {
+            await _hubConnection.SendAsync("Message", cmd);
         }
 
         private async void Register_click(object sender, EventArgs e)
@@ -71,7 +97,9 @@ namespace Client
             this.PlayerName.Enabled = false;
             this.Register.Enabled = false;
 
-            await _hubConnection.SendAsync("RegisterPlayer", PlayerName.Text);
+            Register register = new Register(PlayerName.Text, "Sending");
+            Command cmd = new Command("Register", JsonConvert.SerializeObject(register));
+            await SendAsync(cmd);
         }
 
         private async void Menu_Load(object sender, EventArgs e)
@@ -83,7 +111,9 @@ namespace Client
         {
             this.Play.Enabled = false;
 
-            await _hubConnection.SendAsync("FindOpponent");
+            Matchmaking register = new Matchmaking("JoinMatchmaking", -1, -1, -1);
+            Command cmd = new Command("Matchmaking", JsonConvert.SerializeObject(register));
+            await SendAsync(cmd);
         }
 
         private async void Game_Closing(object sender, System.ComponentModel.CancelEventArgs e)
