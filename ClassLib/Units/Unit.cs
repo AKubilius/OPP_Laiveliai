@@ -11,5 +11,7 @@ namespace ClassLib.Units
     {
         public PictureBox Image { get; set; }
         public Label Label { get; set; }
+
+        public ProgressBar Health { get; set; }
     }
 }

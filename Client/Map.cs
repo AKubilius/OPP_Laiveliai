@@ -20,18 +20,6 @@ namespace Client
         bool _isForcedToLeave;
         Dictionary<int, PictureBox> _bullets;
 
-        //next level  
-        private int x()
-        {
-            return Process.GetCurrentProcess().Id / 40;
-        }
-        private int y()
-        {
-            return Process.GetCurrentProcess().Id / 40;
-        }
-        //
-
-
         public Map(HubConnection hubConnection, int matchId, string playerName, int startingId, int randomY, Game mainMenu)
         {
             this.FormClosing += new FormClosingEventHandler(Map_Closing);
@@ -43,8 +31,13 @@ namespace Client
 
             player = ships[0];
             player.Label.Text = playerName;
-            player.Image.Location = new Point(100 + (startingId * 500), randomY);
+
+            //background.Location = new Point(startingId * randomY, 100);
+            //player.Image.Location = new Point(100 + (startingId * 500), randomY);
+
+            player.Image.Location = new Point(350, 350);
             player.Label.Location = new Point(player.Image.Location.X, player.Image.Location.Y - 50);
+
             player.Image.Image = Properties.Resources.shipRight;
 
             this._matchId = matchId;
@@ -85,7 +78,7 @@ namespace Client
             if (!_bullets.ContainsKey(bulletLocation.BulletID))
             {
                 PictureBox bullet = new PictureBox();
-                bullet.BackColor = System.Drawing.Color.Wheat; // set the colour white for the bullet
+                bullet.BackColor = System.Drawing.Color.Red; // set the colour white for the bullet
                 bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
                 bullet.Tag = "bullet"; // set the tag to bullet
                 bullet.BringToFront(); // bring the bullet to front of other objects
@@ -142,37 +135,65 @@ namespace Client
         }
 
         bool moveRight, moveLeft, moveUp, moveDown;
-        int speed = 10;
+        int speed = 8;
         string facing = "up";
+        int backSpeed = 8;
+        int X = 350;
+        int Y = 350;
 
 
         private async void moveTimerEvent(object sender, EventArgs e)
         {
-            if (moveLeft && player.Image.Left > 0)
+            //if (moveLeft && player.Image.Left > 0)
+            //{
+            //    player.Image.Left -= speed;
+            //    player.Label.Left -= speed;
+            //}
+
+            //if (moveRight && player.Image.Right < 700)
+            //{
+            //    player.Image.Left += speed;
+            //    player.Label.Left += speed;
+            //}
+
+            //if (moveUp && player.Image.Top > 0)
+            //{
+            //    player.Image.Top -= speed;
+            //    player.Label.Top -= speed;
+            //}
+            //if (moveDown && player.Image.Top < 700)
+            //{
+            //    player.Image.Top += speed;
+            //    player.Label.Top += speed;
+            //}
+
+            if (moveLeft)
             {
-                player.Image.Left -= speed;
-                player.Label.Left -= speed;
+                background.Left += backSpeed;
+                X -= backSpeed;
             }
 
-            if (moveRight && player.Image.Right < 700)
+            if (moveRight)
             {
-                player.Image.Left += speed;
-                player.Label.Left += speed;
+                background.Left -= backSpeed;
+                X += backSpeed;
+            }
+            if (moveUp)
+            {
+                background.Top += backSpeed;
+                Y -= backSpeed;
             }
 
-            if (moveUp && player.Image.Top > 0)
+            if (moveDown)
             {
-                player.Image.Top -= speed;
-                player.Label.Top -= speed;
-            }
-            if (moveDown && player.Image.Top < 700)
-            {
-                player.Image.Top += speed;
-                player.Label.Top += speed;
+                background.Top -= backSpeed;
+                Y += backSpeed;
             }
 
 
-            Location location = new Location("MovePlayer", _matchId, _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
+            // Location location = new Location("MovePlayer", _matchId, _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
+            Location location = new Location("MovePlayer", _matchId, _playerName, facing, X, Y);
+            
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
 

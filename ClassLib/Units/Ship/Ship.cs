@@ -7,7 +7,7 @@ namespace ClassLib.Units.Ship
         public Ship(string shipName)
         {
             this.Image = new PictureBox();
-            this.Image.BackColor = System.Drawing.Color.Transparent;
+            //this.Image.BackColor = System.Drawing.Color.Transparent;
             this.Image.Name = shipName;
             this.Image.Size = new System.Drawing.Size(56, 36);
             this.Image.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -21,13 +21,6 @@ namespace ClassLib.Units.Ship
             this.Label.Text = "label2";
             this.Label.BorderStyle = BorderStyle.FixedSingle;
             this.Label.ForeColor = System.Drawing.Color.White;
-        }
-
-        public int CoordinateGenerator()
-        {
-            Random rnd = new Random();
-            int cord = rnd.Next(650);
-            return cord;
         }
     }
 }
