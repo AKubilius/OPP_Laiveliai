@@ -17,12 +17,12 @@ namespace ClassLib
             Content = content;
         }
 
-        public struct Register
+        public struct Authentication
         {
             public string PlayerName { get; set; }
             public string Response { get; set; }
 
-            public Register(string playerName, string response)
+            public Authentication(string playerName, string response)
             {
                 PlayerName = playerName;
                 Response = response;
@@ -65,7 +65,9 @@ namespace ClassLib
             
             public int MatchID { get; set; }
             public string ShipName { get; set; }
-            public string Facing { get; set; }
+            public string Facing { get; set; } = string.Empty;
+
+            public int BulletID { get; set; } = int.MinValue;
 
             public int XAxis { get; set; }
 
@@ -81,25 +83,8 @@ namespace ClassLib
                 XAxis = xAxis;
                 YAxis = yAxis;
             }
-        }
 
-
-        public struct BulletLocation
-        {
-            public string Response { get; set; }
-
-            public int MatchID { get; set; }
-            public string ShipName { get; set; }
-
-
-            public int BulletID { get; set; }
-
-            public int XAxis { get; set; }
-
-            public int YAxis { get; set; }
-
-
-            public BulletLocation(string response, int matchID, string shipName, int bulletID, int xAxis, int yAxis)
+            public Location(string response, int matchID, string shipName, int bulletID, int xAxis, int yAxis)
             {
                 Response = response;
                 MatchID = matchID;

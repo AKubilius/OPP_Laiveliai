@@ -56,12 +56,6 @@ namespace Client
                     case "Location":
                         UpdateLocation(cmd);
                         break;
-                    case "BulletLocation":
-                        UpdateBulletLocation(cmd);
-                        break;
-                    case "MatchEvents":
-                        MatchEvents(cmd);
-                        break;
                 }
             });
         }
@@ -69,24 +63,6 @@ namespace Client
         private async Task SendAsync(Command cmd)
         {
             await _hubConnection.SendAsync("Message", cmd);
-        }
-
-        public void UpdateBulletLocation(Command cmd)
-        {
-            BulletLocation bulletLocation = JsonConvert.DeserializeObject<BulletLocation>(cmd.Content);
-
-            if (!_bullets.ContainsKey(bulletLocation.BulletID))
-            {
-                PictureBox bullet = new PictureBox();
-                bullet.BackColor = System.Drawing.Color.Red; // set the colour white for the bullet
-                bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
-                bullet.Tag = "bullet"; // set the tag to bullet
-                bullet.BringToFront(); // bring the bullet to front of other objects
-                this.Controls.Add(bullet); // add the bullet to the screen
-                _bullets[bulletLocation.BulletID] = bullet;
-            }
-            PictureBox currentBullet = _bullets[bulletLocation.BulletID];
-            currentBullet.Location = new Point(bulletLocation.XAxis, bulletLocation.YAxis);
         }
 
         public void UpdateLocation(Command cmd)
@@ -120,18 +96,22 @@ namespace Client
                     }
                     opponent.Image.Image = location.Facing.Equals("right") ? Properties.Resources.shipRight : Properties.Resources.shipLeft;
                     break;
-            }
-        }
-        public void MatchEvents(Command cmd)
-        {
-            switch (cmd.Name)
-            {
-                case "LeaveMatch":
-                    _isForcedToLeave = true;
-                    this.Close();
+
+                case "UpdateBulletLocation":
+                    if (!_bullets.ContainsKey(location.BulletID))
+                    {
+                        PictureBox bullet = new PictureBox();
+                        bullet.BackColor = System.Drawing.Color.Red; // set the colour white for the bullet
+                        bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
+                        bullet.Tag = "bullet"; // set the tag to bullet
+                        bullet.BringToFront(); // bring the bullet to front of other objects
+                        this.Controls.Add(bullet); // add the bullet to the screen
+                        _bullets[location.BulletID] = bullet;
+                    }
+                    PictureBox currentBullet = _bullets[location.BulletID];
+                    currentBullet.Location = new Point(location.XAxis, location.YAxis);
                     break;
             }
-
         }
 
         bool moveRight, moveLeft, moveUp, moveDown;
@@ -262,12 +242,9 @@ namespace Client
 
         private async void Map_Closing(object sender, CancelEventArgs e)
         {
-            if (!_isForcedToLeave)
-            {
-                MatchEvents match = new MatchEvents("LeftMatch", _matchId);
-                Command cmd = new Command("MatchEvents", JsonConvert.SerializeObject(match));
-                await SendAsync(cmd);
-            }
+            MatchEvents match = new MatchEvents("LeftMatch", _matchId);
+            Command cmd = new Command("MatchEvents", JsonConvert.SerializeObject(match));
+            await SendAsync(cmd);
 
             _mainMenu.Visible = true;
         }

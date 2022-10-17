@@ -40,9 +40,9 @@ namespace Client
 
         public void RegisterPlayer(Command cmd)
         {
-            Register register = JsonConvert.DeserializeObject<Register>(cmd.Content);
+            Authentication auth = JsonConvert.DeserializeObject<Authentication>(cmd.Content);
 
-            switch (register.Response)
+            switch (auth.Response)
             {
                 case "RegisterComplete":
                     this.Register.Visible = false;
@@ -97,8 +97,8 @@ namespace Client
             this.PlayerName.Enabled = false;
             this.Register.Enabled = false;
 
-            Register register = new Register(PlayerName.Text, "Sending");
-            Command cmd = new Command("Register", JsonConvert.SerializeObject(register));
+            Authentication auth = new Authentication(PlayerName.Text, "Register");
+            Command cmd = new Command("Authentication", JsonConvert.SerializeObject(auth));
             await SendAsync(cmd);
         }
 

@@ -1,6 +1,7 @@
 ﻿using ClassLib;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Server.Models;
 using static ClassLib.Command;
@@ -23,20 +24,17 @@ namespace Server.Hubs
         {
             switch (cmd.Name)
             {
-                case "Register":
-                    await RegisterPlayer(cmd);
+                case "Authentication":
+                    await Authentication(cmd);
                     break;
                 case "MatchEvents":
-                    await MatchEvents(cmd, Context.ConnectionId);
+                    await MatchEvents(cmd);
                     break;
                 case "Matchmaking":
                     await Matchmaking(cmd);
                     break;
                 case "Location":
                     await Location(cmd);
-                    break;
-                case "BulletLocation":
-                    await BulletLocation(cmd);
                     break;
             }
         }
@@ -47,39 +45,56 @@ namespace Server.Hubs
         }
 
 
-        public async Task RegisterPlayer(Command cmd)
+        public async Task Authentication(Command cmd)
         {
-            Register register = JsonConvert.DeserializeObject<Register>(cmd.Content);
-
-            bool isSuccesful = false;
-            lock (_lockerRegisteredPlayers)
+            Authentication auth = JsonConvert.DeserializeObject<Authentication>(cmd.Content);
+            switch (auth.Response)
             {
-                var player = _registeredPlayers.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
-
-                if (player == null)
-                {
-                    Player temp = _registeredPlayers.FirstOrDefault(x => x.Name.Equals(register.PlayerName));
-                    if (temp == null)
+                case "Register":
+                    bool isSuccesful = false;
+                    lock (_lockerRegisteredPlayers)
                     {
-                        player = new Player { ConnectionId = Context.ConnectionId, Name = register.PlayerName };
-                        _registeredPlayers.Add(player);
-                        isSuccesful = true;
-                    }
-                }
-            }
+                        var player = _registeredPlayers.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
-            if (isSuccesful)
-            {
-                register.Response = "RegisterComplete";
-                Command answer = new Command("Register", JsonConvert.SerializeObject(register));
-                await SendAsync(answer, Context.ConnectionId);
+                        if (player == null)
+                        {
+                            Player temp = _registeredPlayers.FirstOrDefault(x => x.Name.Equals(auth.PlayerName));
+                            if (temp == null)
+                            {
+                                player = new Player { ConnectionId = Context.ConnectionId, Name = auth.PlayerName };
+                                _registeredPlayers.Add(player);
+                                isSuccesful = true;
+                            }
+                        }
+                    }
+
+                    if (isSuccesful)
+                    {
+                        auth.Response = "RegisterComplete";
+                        Command answer = new Command("Register", JsonConvert.SerializeObject(auth));
+                        await SendAsync(answer, Context.ConnectionId);
+                    }
+                    else
+                    {
+                        auth.Response = "NameOccupied";
+                        Command answer = new Command("Register", JsonConvert.SerializeObject(auth));
+                        await SendAsync(answer, Context.ConnectionId);
+                    }
+                    break;
+                case "Logout":
+                    lock (_lockerRegisteredPlayers)
+                    {
+                        var player = _registeredPlayers.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+
+                        if (player != null)
+                        {
+                            _registeredPlayers.Remove(player);
+                        }
+                    }
+
+                    break;
             }
-            else
-            {
-                register.Response = "NameOccupied";
-                Command answer = new Command("Register", JsonConvert.SerializeObject(register));
-                await SendAsync(answer, Context.ConnectionId);
-            }
+            
 
         }
 
@@ -100,87 +115,86 @@ namespace Server.Hubs
             }
         }
 
-        public async Task MatchEvents(Command cmd, string connectionID)
+        public Task MatchEvents(Command cmd)
         {
+            // reimplement when singleton match exists
             MatchEvents matchEvents = JsonConvert.DeserializeObject<MatchEvents>(cmd.Content);
             Match match = null;
             lock (_matches)
             {
-                match = _matches.First(x => x.Players.Any(y => y.ConnectionId == connectionID));
+                match = _matches.First(x => x.Players.Any(y => y.ConnectionId == Context.ConnectionId));
 
                 if (match != null)
                 {
-                    _matches.Remove(match);
+                    match.Players.Remove(match.Players.First(x => x.ConnectionId == Context.ConnectionId));
                 }
             }
 
-            if (match != null)
-            {
-                foreach (Player player in match.Players)
-                {
-                    if (player.ConnectionId != Context.ConnectionId)
-                        await Clients.Client(player.ConnectionId).SendAsync("LeaveMatch");
-                }
-            }
+            return Task.CompletedTask;
         }
 
         public async Task Location(Command cmd)
         {
             Location location = JsonConvert.DeserializeObject<Location>(cmd.Content);
-            Match match = null;
-            lock (_lockerMatches)
-            {
 
-                foreach (Match m in _matches)
-                {
-                    foreach (Player p in m.Players)
+            switch (location.Response)
+            {
+                case "MovePlayer":
+                    Match match = null;
+                    lock (_lockerMatches)
                     {
-                        if (p.Name.Equals(location.ShipName))
+
+                        foreach (Match m in _matches)
                         {
-                            match = m;
-                            break;
+                            foreach (Player p in m.Players)
+                            {
+                                if (p.Name.Equals(location.ShipName))
+                                {
+                                    match = m;
+                                    break;
+                                }
+                            }
                         }
                     }
-                }
-            }
-            Player opponent = null;
-            if (match != null)
-                opponent = match.Players.First(x => x.Name != location.ShipName);
-            if (opponent != null)
-            {
-                location.Response = "UpdateLocation";
-                Command answer = new Command("Location", JsonConvert.SerializeObject(location));
-                await SendAsync(answer, opponent.ConnectionId);
-            }
-        }
-        public async Task BulletLocation(Command cmd)
-        {
-            BulletLocation location = JsonConvert.DeserializeObject<BulletLocation>(cmd.Content);
-            Match match = null;
-            lock (_lockerMatches)
-            {
-
-                foreach (Match m in _matches)
-                {
-                    foreach (Player p in m.Players)
+                    Player opponent = null;
+                    if (match != null)
+                        opponent = match.Players.FirstOrDefault(x => x.Name != location.ShipName);
+                    if (opponent != null)
                     {
-                        if (p.Name.Equals(location.ShipName))
+                        location.Response = "UpdateLocation";
+                        Command answer = new Command("Location", JsonConvert.SerializeObject(location));
+                        await SendAsync(answer, opponent.ConnectionId);
+                    }
+                    break;
+                case "MoveBullet":
+                    match = null;
+                    lock (_lockerMatches)
+                    {
+
+                        foreach (Match m in _matches)
                         {
-                            match = m;
-                            break;
+                            foreach (Player p in m.Players)
+                            {
+                                if (p.Name.Equals(location.ShipName))
+                                {
+                                    match = m;
+                                    break;
+                                }
+                            }
                         }
                     }
-                }
+                    opponent = null;
+                    if (match != null)
+                        opponent = match.Players.First(x => x.Name != location.ShipName);
+                    if (opponent != null)
+                    {
+                        location.Response = "UpdateBulletLocation";
+                        Command answer = new Command("Location", JsonConvert.SerializeObject(location));
+                        await SendAsync(answer, opponent.ConnectionId);
+                    }
+                    break;
             }
-            Player opponent = null;
-            if (match != null)
-                opponent = match.Players.First(x => x.Name != location.ShipName);
-            if (opponent != null)
-            {
-                location.Response = "UpdateBulletLocation";
-                Command answer = new Command("BulletLocation", JsonConvert.SerializeObject(location));
-                await SendAsync(answer, opponent.ConnectionId);
-            }
+            
         }
 
         public async Task Matchmaking(Command cmd)
