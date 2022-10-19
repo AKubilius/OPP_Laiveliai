@@ -17,21 +17,19 @@ namespace ClassLib.Units.Bullet
         public int bulletLeft; // create a new public integer
         public int bulletTop; // create a new public integer
 
-        public int _matchId;
         public HubConnection _hubConnection;
         public string _playerName;
         public int _bulletId;
 
         private Size _clientSize;
 
-        public void mkBullet(Form form, int matchId, string playerName, HubConnection hubConnection, int bulletId)
+        public void mkBullet(Form form, string playerName, HubConnection hubConnection, int bulletId)
         {
             // this function will add the bullet to the game play
             // it is required to be called from the main class
             _bulletId = bulletId;
             _hubConnection = hubConnection;
             _playerName = playerName;
-            _matchId = matchId;
             bullet.BackColor = System.Drawing.Color.Wheat; // set the colour white for the bullet
             bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
             bullet.Tag = "bullet"; // set the tag to bullet
@@ -72,7 +70,7 @@ namespace ClassLib.Units.Bullet
             {
                 bullet.Top += speed; // move the bullet bottom of the screen
             }
-            Location location = new Location("MoveBullet", _matchId, _playerName, _bulletId, bullet.Location.X, bullet.Location.Y);
+            Location location = new Location("MoveBullet", _playerName, _bulletId, bullet.Location.X, bullet.Location.Y);
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
 

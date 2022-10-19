@@ -12,15 +12,13 @@ namespace Client
     public partial class Map : Form
     {
         HubConnection _hubConnection;
-        int _matchId;
         string _playerName;
         Ship player;
-        Ship opponent;
         Game _mainMenu;
         bool _isForcedToLeave;
         Dictionary<int, PictureBox> _bullets;
 
-        public Map(HubConnection hubConnection, int matchId, string playerName, int startingId, int randomY, Game mainMenu)
+        public Map(HubConnection hubConnection, string playerName, int startingId, int randomY, Game mainMenu)
         {
             this.FormClosing += new FormClosingEventHandler(Map_Closing);
             _isForcedToLeave = false;
@@ -29,19 +27,9 @@ namespace Client
 
             InitializeComponent();
 
-            for (int i = 0; i < 2; i++)
-            {
-                Ship ship = new Ship("ship" + i);
-                ships.Add(ship);
-                ((System.ComponentModel.ISupportInitialize)(ship.Image)).BeginInit();
-                this.Controls.Add(ship.Image);
-                this.Controls.Add(ship.Label);
-                this.Controls.Add(ship.Health);
-                ((System.ComponentModel.ISupportInitialize)(ship.Image)).EndInit();
+            NewShip(playerName);
 
-            }
-
-            player = ships[0];
+            player = ships[playerName];
             player.Label.Text = playerName;
 
             player.Image.Location = new Point(100 + (startingId * 500), randomY);
@@ -50,8 +38,6 @@ namespace Client
             player.Image.Image = Properties.Resources.shipRight;
 
 
-
-            this._matchId = matchId;
             this._playerName = playerName;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -71,6 +57,18 @@ namespace Client
             });
         }
 
+        private Ship NewShip(string playerName)
+        {
+            Ship ship = new Ship(playerName);
+            ships[playerName] = ship;
+            ((System.ComponentModel.ISupportInitialize)(ship.Image)).BeginInit();
+            this.Controls.Add(ship.Image);
+            this.Controls.Add(ship.Label);
+            this.Controls.Add(ship.Health);
+            ((System.ComponentModel.ISupportInitialize)(ship.Image)).EndInit();
+            return ship;
+        }
+
         private async Task SendAsync(Command cmd)
         {
             await _hubConnection.SendAsync("Message", cmd);
@@ -83,7 +81,14 @@ namespace Client
             switch (location.Response)
             {
                 case "UpdateLocation":
-                    opponent = ships[1];
+                    Ship opponent = null;
+                    if (!ships.ContainsKey(location.ShipName))
+                    {
+                        opponent = NewShip(location.ShipName);
+                    } else
+                    {
+                        opponent = ships[location.ShipName];
+                    }
                     opponent.Image.Image = Properties.Resources.shipRight;
                     opponent.Image.Location = new Point(location.XAxis, location.YAxis);
                     opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
@@ -167,8 +172,8 @@ namespace Client
                 player.Health.Top += speed;
             }
 
-            Location location = new Location("MovePlayer", _matchId, _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
-            
+            Location location = new Location("MovePlayer", _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
+
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
 
@@ -231,13 +236,13 @@ namespace Client
             shoot.direction = direct; // assignment the direction to the bullet
             shoot.bulletLeft = player.Image.Left + (player.Image.Width / 2); // place the bullet to left half of the player
             shoot.bulletTop = player.Image.Top + (player.Image.Height / 2); // place the bullet on top half of the player
-            shoot.mkBullet(this, _matchId, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode()); // run the function mkbullet from the bullet class. 
+            shoot.mkBullet(this, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode()); // run the function mkbullet from the bullet class. 
 
         }
 
         private async void Map_Closing(object sender, CancelEventArgs e)
         {
-            MatchEvents match = new MatchEvents("LeftMatch", _matchId);
+            MatchEvents match = new MatchEvents("LeftMatch");
             Command cmd = new Command("MatchEvents", JsonConvert.SerializeObject(match));
             await SendAsync(cmd);
 

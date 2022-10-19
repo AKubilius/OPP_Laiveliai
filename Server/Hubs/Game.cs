@@ -11,13 +11,12 @@ namespace Server.Hubs
     public class Game : Hub
     {
         private static List<Player> _registeredPlayers = new List<Player>();
-        private static List<Match> _matches = new List<Match>();
+        private static Match _match = Match.Instance();
         private static List<Player> _playersInMatchmaking = new List<Player>();
         static private Random random = new Random();
 
         private object _lockerRegisteredPlayers = new object();
         private object _lockerMatchmaking = new object();
-        private object _lockerMatches = new object();
 
 
         public async void Message(Command cmd)
@@ -42,6 +41,11 @@ namespace Server.Hubs
         private async Task SendAsync(Command cmd, string callerID)
         {
             await Clients.Client(callerID).SendAsync("Message", cmd);
+        }
+
+        private async Task SendAllAsync(Command cmd)
+        {
+            await Clients.All.SendAsync("Message", cmd);
         }
 
 
@@ -94,7 +98,7 @@ namespace Server.Hubs
 
                     break;
             }
-            
+
 
         }
 
@@ -119,16 +123,8 @@ namespace Server.Hubs
         {
             // reimplement when singleton match exists
             MatchEvents matchEvents = JsonConvert.DeserializeObject<MatchEvents>(cmd.Content);
-            Match match = null;
-            lock (_matches)
-            {
-                match = _matches.First(x => x.Players.Any(y => y.ConnectionId == Context.ConnectionId));
 
-                if (match != null)
-                {
-                    match.Players.Remove(match.Players.First(x => x.ConnectionId == Context.ConnectionId));
-                }
-            }
+            _match.Players.Remove(_match.Players.First(x => x.ConnectionId == Context.ConnectionId));
 
             return Task.CompletedTask;
         }
@@ -140,62 +136,17 @@ namespace Server.Hubs
             switch (location.Response)
             {
                 case "MovePlayer":
-                    Match match = null;
-                    lock (_lockerMatches)
-                    {
-
-                        foreach (Match m in _matches)
-                        {
-                            foreach (Player p in m.Players)
-                            {
-                                if (p.Name.Equals(location.ShipName))
-                                {
-                                    match = m;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    Player opponent = null;
-                    if (match != null)
-                        opponent = match.Players.FirstOrDefault(x => x.Name != location.ShipName);
-                    if (opponent != null)
-                    {
-                        location.Response = "UpdateLocation";
-                        Command answer = new Command("Location", JsonConvert.SerializeObject(location));
-                        await SendAsync(answer, opponent.ConnectionId);
-                    }
+                    location.Response = "UpdateLocation";
+                    Command answer = new Command("Location", JsonConvert.SerializeObject(location));
+                    await SendAllAsync(answer);
                     break;
                 case "MoveBullet":
-                    match = null;
-                    lock (_lockerMatches)
-                    {
-
-                        foreach (Match m in _matches)
-                        {
-                            foreach (Player p in m.Players)
-                            {
-                                if (p.Name.Equals(location.ShipName))
-                                {
-                                    match = m;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    opponent = null;
-                    if (match != null)
-                        opponent = match.Players.First(x => x.Name != location.ShipName);
-                    if (opponent != null)
-                    {
-                        
-                        location.Response = "UpdateBulletLocation";
-                        Command answer = new Command("Location", JsonConvert.SerializeObject(location));
-                        await SendAsync(answer, opponent.ConnectionId);
-                    }
+                    location.Response = "UpdateBulletLocation";
+                    answer = new Command("Location", JsonConvert.SerializeObject(location));
+                    await SendAllAsync(answer);
                     break;
             }
-            
+
         }
 
         public async Task Matchmaking(Command cmd)
@@ -214,22 +165,21 @@ namespace Server.Hubs
             }
         }
 
-        public async Task JoinMatchmaking(string callerID)
+        public async Task JoinMatchmaking(string ConnectionId)
         {
             Matchmaking matchmaking = new Matchmaking();
             Command answer = null;
 
-            var player = _registeredPlayers.FirstOrDefault(x => x.ConnectionId == callerID);
+            var player = _registeredPlayers.FirstOrDefault(x => x.ConnectionId == ConnectionId);
             if (player == null) return;
 
-            Player opponent = null;
             lock (_lockerMatchmaking)
             {
                 _playersInMatchmaking.Add(player);
-                opponent = _playersInMatchmaking.FirstOrDefault(x => x.ConnectionId != player.ConnectionId);
+                //opponent = _playersInMatchmaking.FirstOrDefault(x => x.ConnectionId != player.ConnectionId);
             }
 
-            if (opponent == null)
+            if (_match.Players.Count == 3)
             {
                 matchmaking.Response = "InMatchmakingQueue";
                 answer = new Command("Matchmaking", JsonConvert.SerializeObject(matchmaking));
@@ -238,35 +188,19 @@ namespace Server.Hubs
                 return;
             }
 
-            player.Opponent = opponent;
-            opponent.Opponent = player;
-
             lock (_lockerMatchmaking)
             {
-                _playersInMatchmaking.Remove(opponent);
                 _playersInMatchmaking.Remove(player);
             }
 
-            var match = new Match { Players = new List<Player> { player, opponent }, MatchId = DateTime.UtcNow.GetHashCode() };
-
-            lock (_lockerMatches)
-            {
-                _matches.Add(match);
-            }
-
+            _match.Players.Add(player);
 
             matchmaking.Response = "MatchCreated";
-            matchmaking.MatchID = match.MatchId;
 
             matchmaking.StartingID = 0;
             matchmaking.StartingYPos = random.Next(0, 60);
             answer = new Command("Matchmaking", JsonConvert.SerializeObject(matchmaking));
             await SendAsync(answer, player.ConnectionId);
-
-            matchmaking.StartingID = 1;
-            matchmaking.StartingYPos = random.Next(0, 600);
-            answer = new Command("Matchmaking", JsonConvert.SerializeObject(matchmaking));
-            await SendAsync(answer, opponent.ConnectionId);
         }
     }
 }

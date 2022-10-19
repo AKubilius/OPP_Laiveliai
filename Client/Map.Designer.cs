@@ -61,7 +61,7 @@ namespace Client
 
         #endregion
 
-        private List<Ship> ships = new List<Ship>();
+        private Dictionary<string, Ship> ships = new Dictionary<string, Ship>();
         private System.Windows.Forms.Timer moveTimer;
     }
 }

@@ -77,7 +77,7 @@ namespace Client
                     break;
 
                 case "MatchCreated":
-                    Map map = new Map(_hubConnection, matchmaking.MatchID, PlayerName.Text, matchmaking.StartingID, matchmaking.StartingYPos, this);
+                    Map map = new Map(_hubConnection, PlayerName.Text, matchmaking.StartingID, matchmaking.StartingYPos, this);
                     this.LobbyStatus.Visible = false;
                     this.Play.Enabled = true;
                     this.Hide();
@@ -111,7 +111,7 @@ namespace Client
         {
             this.Play.Enabled = false;
 
-            Matchmaking register = new Matchmaking("JoinMatchmaking", -1, -1, -1);
+            Matchmaking register = new Matchmaking("JoinMatchmaking", -1, -1);
             Command cmd = new Command("Matchmaking", JsonConvert.SerializeObject(register));
             await SendAsync(cmd);
         }

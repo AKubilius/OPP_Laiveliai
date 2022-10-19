@@ -32,28 +32,24 @@ namespace ClassLib
         public struct MatchEvents
         {
             public string Response { get; set; }
-            public int MatchID { get; set; }
 
 
-            public MatchEvents(string response, int matchID)
+            public MatchEvents(string response)
             {
                 Response = response;
-                MatchID = matchID;
             }
         }
 
         public struct Matchmaking
         {
             public string Response { get; set; }
-            public int MatchID { get; set; }
             public int StartingID { get; set; }
             public int StartingYPos { get; set; }
 
 
-            public Matchmaking(string response, int matchID, int startingID, int startingYPos)
+            public Matchmaking(string response, int startingID, int startingYPos)
             {
                 Response = response;
-                MatchID = matchID;
                 StartingID = startingID;
                 StartingYPos = startingYPos;
             }
@@ -62,32 +58,25 @@ namespace ClassLib
         public struct Location
         {
             public string Response { get; set; }
-            
-            public int MatchID { get; set; }
             public string ShipName { get; set; }
             public string Facing { get; set; } = string.Empty;
-
             public int BulletID { get; set; } = int.MinValue;
-
             public int XAxis { get; set; }
-
             public int YAxis { get; set; }
 
 
-            public Location(string response, int matchID, string shipName, string facing, int xAxis, int yAxis)
+            public Location(string response, string shipName, string facing, int xAxis, int yAxis)
             {
                 Response = response;
-                MatchID = matchID;
                 ShipName = shipName;
                 Facing = facing;
                 XAxis = xAxis;
                 YAxis = yAxis;
             }
 
-            public Location(string response, int matchID, string shipName, int bulletID, int xAxis, int yAxis)
+            public Location(string response, string shipName, int bulletID, int xAxis, int yAxis)
             {
                 Response = response;
-                MatchID = matchID;
                 ShipName = shipName;
                 BulletID = bulletID;
                 XAxis = xAxis;
