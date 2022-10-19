@@ -27,16 +27,23 @@ namespace Client
             _mainMenu = mainMenu;
             _bullets = new Dictionary<int, PictureBox>();
 
-            InitializeComponent(2);
+            InitializeComponent();
+
+            for (int i = 0; i < 2; i++)
+            {
+                Ship ship = new Ship("ship" + i);
+                ships.Add(ship);
+                ((System.ComponentModel.ISupportInitialize)(ship.Image)).BeginInit();
+                this.Controls.Add(ship.Image);
+                this.Controls.Add(ship.Label);
+                ((System.ComponentModel.ISupportInitialize)(ship.Image)).EndInit();
+
+            }
 
             player = ships[0];
             player.Label.Text = playerName;
 
-            //background.Location = new Point(startingId * randomY, 100);
-            //player.Image.Location = new Point(100 + (startingId * 500), randomY);
-
-            player.Image.Location = new Point(350, 350);
-            player.Label.Location = new Point(player.Image.Location.X, player.Image.Location.Y - 50);
+            player.Image.Location = new Point(100 + (startingId * 500), randomY);
 
             player.Image.Image = Properties.Resources.shipRight;
 
@@ -117,62 +124,33 @@ namespace Client
         bool moveRight, moveLeft, moveUp, moveDown;
         int speed = 8;
         string facing = "up";
-        int backSpeed = 8;
-        int X = 350;
-        int Y = 350;
-
 
         private async void moveTimerEvent(object sender, EventArgs e)
         {
-            //if (moveLeft && player.Image.Left > 0)
-            //{
-            //    player.Image.Left -= speed;
-            //    player.Label.Left -= speed;
-            //}
-
-            //if (moveRight && player.Image.Right < 700)
-            //{
-            //    player.Image.Left += speed;
-            //    player.Label.Left += speed;
-            //}
-
-            //if (moveUp && player.Image.Top > 0)
-            //{
-            //    player.Image.Top -= speed;
-            //    player.Label.Top -= speed;
-            //}
-            //if (moveDown && player.Image.Top < 700)
-            //{
-            //    player.Image.Top += speed;
-            //    player.Label.Top += speed;
-            //}
-
-            if (moveLeft)
+            if (moveLeft && player.Image.Left > 0)
             {
-                background.Left += backSpeed;
-                X -= backSpeed;
+                player.Image.Left -= speed;
+                player.Label.Left -= speed;
             }
 
-            if (moveRight)
+            if (moveRight && player.Image.Right < ClientSize.Width)
             {
-                background.Left -= backSpeed;
-                X += backSpeed;
-            }
-            if (moveUp)
-            {
-                background.Top += backSpeed;
-                Y -= backSpeed;
+                player.Image.Left += speed;
+                player.Label.Left += speed;
             }
 
-            if (moveDown)
+            if (moveUp && player.Image.Top > 0)
             {
-                background.Top -= backSpeed;
-                Y += backSpeed;
+                player.Image.Top -= speed;
+                player.Label.Top -= speed;
+            }
+            if (moveDown && player.Image.Top < ClientSize.Height)
+            {
+                player.Image.Top += speed;
+                player.Label.Top += speed;
             }
 
-
-            // Location location = new Location("MovePlayer", _matchId, _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
-            Location location = new Location("MovePlayer", _matchId, _playerName, facing, X, Y);
+            Location location = new Location("MovePlayer", _matchId, _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
             
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);

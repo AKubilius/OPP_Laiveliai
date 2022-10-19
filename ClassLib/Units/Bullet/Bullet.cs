@@ -22,6 +22,8 @@ namespace ClassLib.Units.Bullet
         public string _playerName;
         public int _bulletId;
 
+        private Size _clientSize;
+
         public void mkBullet(Form form, int matchId, string playerName, HubConnection hubConnection, int bulletId)
         {
             // this function will add the bullet to the game play
@@ -37,6 +39,7 @@ namespace ClassLib.Units.Bullet
             bullet.Top = bulletTop; // set bullet right
             bullet.BringToFront(); // bring the bullet to front of other objects
             form.Controls.Add(bullet); // add the bullet to the screen
+            _clientSize = form.ClientSize;
 
             tm.Interval = speed; // set the timer interval to speed
             tm.Tick += new EventHandler(tm_Tick); // assignment the timer with an event
@@ -73,7 +76,7 @@ namespace ClassLib.Units.Bullet
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
 
-            if (bullet.Left < -50 || bullet.Left > 1000 || bullet.Top < 0 || bullet.Top > 1000)
+            if (bullet.Left < -50 || bullet.Left > _clientSize.Width || bullet.Top < 0 || bullet.Top > _clientSize.Height)
             {
                 tm.Stop(); // stop the timer
                 tm.Dispose(); // dispose the timer event and component from the program
