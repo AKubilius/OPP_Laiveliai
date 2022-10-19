@@ -188,6 +188,7 @@ namespace Server.Hubs
                         opponent = match.Players.First(x => x.Name != location.ShipName);
                     if (opponent != null)
                     {
+                        
                         location.Response = "UpdateBulletLocation";
                         Command answer = new Command("Location", JsonConvert.SerializeObject(location));
                         await SendAsync(answer, opponent.ConnectionId);

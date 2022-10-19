@@ -36,6 +36,7 @@ namespace Client
                 ((System.ComponentModel.ISupportInitialize)(ship.Image)).BeginInit();
                 this.Controls.Add(ship.Image);
                 this.Controls.Add(ship.Label);
+                this.Controls.Add(ship.Health);
                 ((System.ComponentModel.ISupportInitialize)(ship.Image)).EndInit();
 
             }
@@ -44,8 +45,11 @@ namespace Client
             player.Label.Text = playerName;
 
             player.Image.Location = new Point(100 + (startingId * 500), randomY);
-
+            player.Health.Location = new Point(player.Image.Location.X + 6, player.Image.Location.Y + 50);
+            player.Label.Location = new Point(player.Image.Location.X, player.Image.Location.Y - 50);
             player.Image.Image = Properties.Resources.shipRight;
+
+
 
             this._matchId = matchId;
             this._playerName = playerName;
@@ -83,6 +87,7 @@ namespace Client
                     opponent.Image.Image = Properties.Resources.shipRight;
                     opponent.Image.Location = new Point(location.XAxis, location.YAxis);
                     opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
+                    opponent.Health.Location = new Point(location.XAxis + 6, location.YAxis + 50);
                     opponent.Label.Text = location.ShipName;
                     switch (location.Facing)
                     {
@@ -117,6 +122,14 @@ namespace Client
                     }
                     PictureBox currentBullet = _bullets[location.BulletID];
                     currentBullet.Location = new Point(location.XAxis, location.YAxis);
+
+                    if (currentBullet.Bounds.IntersectsWith(player.Image.Bounds))
+                    {
+                        if (player.Health.Value > 1)
+                            player.Health.Value -= 5;
+                        this.Controls.Remove(currentBullet);
+                    }
+
                     break;
             }
         }
@@ -131,23 +144,27 @@ namespace Client
             {
                 player.Image.Left -= speed;
                 player.Label.Left -= speed;
+                player.Health.Left -= speed;
             }
 
             if (moveRight && player.Image.Right < ClientSize.Width)
             {
                 player.Image.Left += speed;
                 player.Label.Left += speed;
+                player.Health.Left += speed;
             }
 
             if (moveUp && player.Image.Top > 0)
             {
                 player.Image.Top -= speed;
                 player.Label.Top -= speed;
+                player.Health.Top -= speed;
             }
             if (moveDown && player.Image.Top < ClientSize.Height)
             {
                 player.Image.Top += speed;
                 player.Label.Top += speed;
+                player.Health.Top += speed;
             }
 
             Location location = new Location("MovePlayer", _matchId, _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
