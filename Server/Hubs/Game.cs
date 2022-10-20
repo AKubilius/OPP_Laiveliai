@@ -106,7 +106,7 @@ namespace Server.Hubs
         {
             lock (_lockerRegisteredPlayers)
             {
-                var player = _registeredPlayers.First(x => x.ConnectionId == Context.ConnectionId);
+                Player? player = _registeredPlayers.First(x => x.ConnectionId == Context.ConnectionId);
 
                 if (player != null)
                 {
@@ -119,14 +119,25 @@ namespace Server.Hubs
             }
         }
 
-        public Task MatchEvents(Command cmd)
+        public async Task MatchEvents(Command cmd)
         {
             // reimplement when singleton match exists
             MatchEvents matchEvents = JsonConvert.DeserializeObject<MatchEvents>(cmd.Content);
 
-            _match.Players.Remove(_match.Players.First(x => x.ConnectionId == Context.ConnectionId));
-
-            return Task.CompletedTask;
+            switch (matchEvents.Response)
+            {
+                case "LeftMatch":
+                    var player = _match.Players.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+                    if (player != null)
+                    {
+                        _match.Players.Remove(_match.Players.First(x => x.ConnectionId == Context.ConnectionId));
+                        var cmdResponse = new Command("LeftMatch", player.Name);
+                        await SendAllAsync(cmdResponse);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
 
         public async Task Location(Command cmd)

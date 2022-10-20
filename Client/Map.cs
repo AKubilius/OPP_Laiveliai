@@ -53,6 +53,15 @@ namespace Client
                     case "Location":
                         UpdateLocation(cmd);
                         break;
+                    case "LeftMatch":
+                        Ship ship = null;
+                        if (ships.ContainsKey(cmd.Content))
+                        {
+                            ship = ships[cmd.Content];
+                            ships.Remove(cmd.Content);
+                            ship.Dispose();
+                        }
+                        break;
                 }
             });
         }
@@ -85,7 +94,8 @@ namespace Client
                     if (!ships.ContainsKey(location.ShipName))
                     {
                         opponent = NewShip(location.ShipName);
-                    } else
+                    }
+                    else
                     {
                         opponent = ships[location.ShipName];
                     }

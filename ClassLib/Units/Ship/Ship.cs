@@ -29,5 +29,11 @@ namespace ClassLib.Units.Ship
             this.Label.BorderStyle = BorderStyle.FixedSingle;
             this.Label.ForeColor = System.Drawing.Color.White;
         }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            Health.Dispose();
+        }
     }
 }
