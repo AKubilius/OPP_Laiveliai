@@ -48,6 +48,11 @@ namespace Server.Hubs
             await Clients.All.SendAsync("Message", cmd);
         }
 
+        private async Task SendAllExeptAsync(Command cmd, string connectionId)
+        {
+            await Clients.AllExcept(connectionId).SendAsync("Message", cmd);
+        }
+
 
         public async Task Authentication(Command cmd)
         {
@@ -149,12 +154,12 @@ namespace Server.Hubs
                 case "MovePlayer":
                     location.Response = "UpdateLocation";
                     Command answer = new Command("Location", JsonConvert.SerializeObject(location));
-                    await SendAllAsync(answer);
+                    await SendAllExeptAsync(answer, Context.ConnectionId);
                     break;
                 case "MoveBullet":
                     location.Response = "UpdateBulletLocation";
                     answer = new Command("Location", JsonConvert.SerializeObject(location));
-                    await SendAllAsync(answer);
+                    await SendAllExeptAsync(answer, Context.ConnectionId);
                     break;
             }
 

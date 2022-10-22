@@ -1,4 +1,5 @@
 ﻿using ClassLib;
+using ClassLib.Units.Ship;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using System;
@@ -10,6 +11,7 @@ namespace Client
     {
 
         HubConnection _hubConnection;
+        Skin _skin;
 
         public Game()
         {
@@ -37,6 +39,8 @@ namespace Client
                 }
             });
         }
+
+        public Skin GetSkin() => _skin;
 
         public void RegisterPlayer(Command cmd)
         {
@@ -119,6 +123,22 @@ namespace Client
         private async void Game_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             await _hubConnection.SendAsync("LogoutPlayer");
+        }
+
+        private void White_CheckedChanged(object sender, EventArgs e)
+        {
+            if (White.Checked)
+            {
+                _skin = Skin.White;
+            }
+        }
+
+        private void Red_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Red.Checked)
+            {
+                _skin = Skin.Red;
+            }
         }
     }
 }

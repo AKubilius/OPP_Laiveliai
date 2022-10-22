@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassLib.Units.Ship;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -63,15 +64,17 @@ namespace ClassLib
             public int BulletID { get; set; } = int.MinValue;
             public int XAxis { get; set; }
             public int YAxis { get; set; }
+            public Skin? Skin { get; set; }
 
 
-            public Location(string response, string shipName, string facing, int xAxis, int yAxis)
+            public Location(string response, string shipName, string facing, int xAxis, int yAxis, Skin skin)
             {
                 Response = response;
                 ShipName = shipName;
                 Facing = facing;
                 XAxis = xAxis;
                 YAxis = yAxis;
+                Skin = skin;
             }
 
             public Location(string response, string shipName, int bulletID, int xAxis, int yAxis)
@@ -81,6 +84,7 @@ namespace ClassLib
                 BulletID = bulletID;
                 XAxis = xAxis;
                 YAxis = yAxis;
+                Skin = null;
             }
         }
     }

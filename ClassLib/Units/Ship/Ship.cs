@@ -2,14 +2,14 @@
 
 namespace ClassLib.Units.Ship
 {
-    public class Ship : Unit
+    public class Ship : Unit, IShip
     {
         public ProgressBar Health { get; set; }
 
         public Ship(string shipName)
         {
             this.Image = new PictureBox();
-            //this.Image.BackColor = System.Drawing.Color.Transparent;
+            this.Image.BackColor = System.Drawing.Color.Transparent;
             this.Health = new ProgressBar();
             this.Health.Name = "Health";
             this.Health.Size = new Size(40, 6);
@@ -34,6 +34,11 @@ namespace ClassLib.Units.Ship
         {
             base.Dispose();
             Health.Dispose();
+        }
+
+        public Skin GetSkin()
+        {
+            return Skin.White;
         }
     }
 }

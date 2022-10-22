@@ -6,6 +6,7 @@ using ClassLib.Units.Bullet;
 using ClassLib;
 using static ClassLib.Command;
 using Newtonsoft.Json;
+using Client.Models;
 
 namespace Client
 {
@@ -17,6 +18,9 @@ namespace Client
         Game _mainMenu;
         bool _isForcedToLeave;
         Dictionary<int, PictureBox> _bullets;
+        Bitmap _image;
+        Keys _key;
+        Skin _skin;
 
         public Map(HubConnection hubConnection, string playerName, int startingId, int randomY, Game mainMenu)
         {
@@ -29,14 +33,14 @@ namespace Client
 
             NewShip(playerName);
 
-            player = ships[playerName];
+            player = ships[playerName].Ship;
             player.Label.Text = playerName;
 
             player.Image.Location = new Point(100 + (startingId * 500), randomY);
             player.Health.Location = new Point(player.Image.Location.X + 6, player.Image.Location.Y + 50);
             player.Label.Location = new Point(player.Image.Location.X, player.Image.Location.Y - 50);
-            player.Image.Image = Properties.Resources.shipRight;
-
+            _skin = _mainMenu.GetSkin();
+            SetSkin(player, _skin);
 
             this._playerName = playerName;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -57,7 +61,7 @@ namespace Client
                         Ship ship = null;
                         if (ships.ContainsKey(cmd.Content))
                         {
-                            ship = ships[cmd.Content];
+                            ship = ships[cmd.Content].Ship;
                             ships.Remove(cmd.Content);
                             ship.Dispose();
                         }
@@ -66,10 +70,34 @@ namespace Client
             });
         }
 
+        private void SetSkin(Ship player, Skin skin)
+        {
+            switch (skin)
+            {
+                case Skin.White:
+                    _image = Properties.Resources.shipWhite;
+                    break;
+                case Skin.Red:
+                    _image = Properties.Resources.shipRed;
+                    break;
+            }
+            player.Image.Image = _image;
+        }
+
         private Ship NewShip(string playerName)
         {
             Ship ship = new Ship(playerName);
-            ships[playerName] = ship;
+            ShipDecorator shipDecorator = null;
+            switch (_mainMenu.GetSkin())
+            {
+                case Skin.White:
+                    shipDecorator = new ShipDecorator(ship);
+                    break;
+                case Skin.Red:
+                    shipDecorator = new RedShip(ship);
+                    break;
+            }
+            ships[playerName] = shipDecorator;
             ((System.ComponentModel.ISupportInitialize)(ship.Image)).BeginInit();
             this.Controls.Add(ship.Image);
             this.Controls.Add(ship.Label);
@@ -94,12 +122,13 @@ namespace Client
                     if (!ships.ContainsKey(location.ShipName))
                     {
                         opponent = NewShip(location.ShipName);
+                        SetSkin(opponent, (Skin)location.Skin);
                     }
                     else
                     {
-                        opponent = ships[location.ShipName];
+                        opponent = ships[location.ShipName].Ship;
                     }
-                    opponent.Image.Image = Properties.Resources.shipRight;
+                    SetSkin(opponent, (Skin)location.Skin);
                     opponent.Image.Location = new Point(location.XAxis, location.YAxis);
                     opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
                     opponent.Health.Location = new Point(location.XAxis + 6, location.YAxis + 50);
@@ -107,21 +136,20 @@ namespace Client
                     switch (location.Facing)
                     {
                         case "right":
-                            opponent.Image.Image = Properties.Resources.shipRight;
                             break;
                         case "left":
-                            opponent.Image.Image = Properties.Resources.shipLeft;
+                            opponent.Image.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
                             break;
                         case "up":
-                            opponent.Image.Image = Properties.Resources.shipUp;
+                            opponent.Image.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
                             break;
                         case "down":
-                            opponent.Image.Image = Properties.Resources.shipDown;
+                            opponent.Image.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             break;
                         default:
                             break;
                     }
-                    opponent.Image.Image = location.Facing.Equals("right") ? Properties.Resources.shipRight : Properties.Resources.shipLeft;
+                    //opponent.Image.Image = location.Facing.Equals("right") ? Properties.Resources.shipRight : Properties.Resources.shipLeft;
                     break;
 
                 case "UpdateBulletLocation":
@@ -182,7 +210,7 @@ namespace Client
                 player.Health.Top += speed;
             }
 
-            Location location = new Location("MovePlayer", _playerName, facing, player.Image.Location.X, player.Image.Location.Y);
+            Location location = new Location("MovePlayer", _playerName, facing, player.Image.Location.X, player.Image.Location.Y, _skin);
 
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
@@ -190,17 +218,37 @@ namespace Client
         }
         private async void keyisdown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode != _key)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Left:
+                        SetSkin(player, _skin);
+                        player.Image.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                        break;
+                    case Keys.Right:
+                        SetSkin(player, _skin);
+                        break;
+                    case Keys.Down:
+                        SetSkin(player, _skin);
+                        player.Image.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                        break;
+                    case Keys.Up:
+                        SetSkin(player, _skin);
+                        player.Image.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                        break;
+                }
+            }
+            _key = e.KeyCode;
             if (e.KeyCode == Keys.Left)
             {
                 moveLeft = true;
                 facing = "left";
-                player.Image.Image = Properties.Resources.shipLeft;
             }
             if (e.KeyCode == Keys.Right)
             {
                 moveRight = true;
                 facing = "right";
-                player.Image.Image = Properties.Resources.shipRight;
             }
             if (e.KeyCode == Keys.Down)
             {
@@ -238,6 +286,17 @@ namespace Client
             }
 
         }
+
+        private void keypress(object sender, KeyPressEventArgs e)
+        {
+            
+        }
+
+        private async void keypress(object sender, KeyEventArgs e)
+        {
+            
+        }
+
         private void shoot(string direct)
         {
             // this is the function thats makes the new bullets in this game

@@ -42,18 +42,19 @@ namespace Client
             // 
             // Map
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.ClientSize = new System.Drawing.Size(1607, 796);
+            this.ClientSize = new System.Drawing.Size(1837, 1061);
             this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.Location = new System.Drawing.Point(500, 500);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.Name = "Map";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Map";
             this.TopMost = true;
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.keyisdown);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.keypress);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.keyisup);
             this.ResumeLayout(false);
 
@@ -61,7 +62,7 @@ namespace Client
 
         #endregion
 
-        private Dictionary<string, Ship> ships = new Dictionary<string, Ship>();
+        private Dictionary<string, ShipDecorator> ships = new Dictionary<string, ShipDecorator>();
         private System.Windows.Forms.Timer moveTimer;
     }
 }
