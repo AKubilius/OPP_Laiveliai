@@ -6,7 +6,6 @@ using ClassLib.Units.Bullet;
 using ClassLib;
 using static ClassLib.Command;
 using Newtonsoft.Json;
-using Client.Models;
 
 namespace Client
 {
@@ -31,16 +30,14 @@ namespace Client
 
             InitializeComponent();
 
-            NewShip(playerName);
+            _skin = _mainMenu.GetSkin();
+            NewShip(playerName, _skin);
 
             player = ships[playerName].Ship;
             player.Label.Text = playerName;
-
             player.Image.Location = new Point(100 + (startingId * 500), randomY);
             player.Health.Location = new Point(player.Image.Location.X + 6, player.Image.Location.Y + 50);
             player.Label.Location = new Point(player.Image.Location.X, player.Image.Location.Y - 50);
-            _skin = _mainMenu.GetSkin();
-            SetSkin(player, _skin);
 
             this._playerName = playerName;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -70,7 +67,7 @@ namespace Client
             });
         }
 
-        private void SetSkin(Ship player, Skin skin)
+        private void ResetPicture(Ship player, Skin skin)
         {
             switch (skin)
             {
@@ -84,20 +81,11 @@ namespace Client
             player.Image.Image = _image;
         }
 
-        private Ship NewShip(string playerName)
+        private Ship NewShip(string playerName, Skin skin)
         {
             Ship ship = new Ship(playerName);
-            ShipDecorator shipDecorator = null;
-            switch (_mainMenu.GetSkin())
-            {
-                case Skin.White:
-                    shipDecorator = new ShipDecorator(ship);
-                    break;
-                case Skin.Red:
-                    shipDecorator = new RedShip(ship);
-                    break;
-            }
-            ships[playerName] = shipDecorator;
+            ResetPicture(ship, skin);
+            ships[playerName] = new ShipDecorator(ship);
             ((System.ComponentModel.ISupportInitialize)(ship.Image)).BeginInit();
             this.Controls.Add(ship.Image);
             this.Controls.Add(ship.Label);
@@ -121,14 +109,13 @@ namespace Client
                     Ship opponent = null;
                     if (!ships.ContainsKey(location.ShipName))
                     {
-                        opponent = NewShip(location.ShipName);
-                        SetSkin(opponent, (Skin)location.Skin);
+                        opponent = NewShip(location.ShipName, _skin);
                     }
                     else
                     {
                         opponent = ships[location.ShipName].Ship;
                     }
-                    SetSkin(opponent, (Skin)location.Skin);
+                    ResetPicture(opponent, (Skin)location.Skin);
                     opponent.Image.Location = new Point(location.XAxis, location.YAxis);
                     opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
                     opponent.Health.Location = new Point(location.XAxis + 6, location.YAxis + 50);
@@ -223,18 +210,18 @@ namespace Client
                 switch (e.KeyCode)
                 {
                     case Keys.Left:
-                        SetSkin(player, _skin);
+                        ResetPicture(player, _skin);
                         player.Image.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
                         break;
                     case Keys.Right:
-                        SetSkin(player, _skin);
+                        ResetPicture(player, _skin);
                         break;
                     case Keys.Down:
-                        SetSkin(player, _skin);
+                        ResetPicture(player, _skin);
                         player.Image.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
                         break;
                     case Keys.Up:
-                        SetSkin(player, _skin);
+                        ResetPicture(player, _skin);
                         player.Image.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
                         break;
                 }
