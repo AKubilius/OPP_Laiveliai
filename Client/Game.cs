@@ -140,5 +140,21 @@ namespace Client
                 _skin = Skin.Red;
             }
         }
+
+        private void Blue_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Blue.Checked)
+            {
+                _skin = Skin.Blue;
+            }
+        }
+
+        private void Yellow_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Yellow.Checked)
+            {
+                _skin = Skin.Yellow;
+            }
+        }
     }
 }

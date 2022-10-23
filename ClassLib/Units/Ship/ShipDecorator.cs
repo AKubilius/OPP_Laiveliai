@@ -1,6 +1,6 @@
 ﻿namespace ClassLib.Units.Ship
 {
-    public class ShipDecorator : IShip
+    public abstract class ShipDecorator : IShip
     {
         public Ship Ship { get; }
 
@@ -9,9 +9,6 @@
             Ship = ship;
         }
 
-        public virtual Skin GetSkin()
-        {
-            return Ship.GetSkin();
-        }
+        public abstract Skin GetSkin();
     }
 }

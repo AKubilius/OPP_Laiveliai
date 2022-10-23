@@ -1,8 +1,8 @@
 ﻿namespace ClassLib.Units.Ship
 {
-    public class RedShipDecorator : ShipDecorator
+    public class ShipDecoratorRed : ShipDecorator
     {
-        public RedShipDecorator(Ship ship) : base(ship)
+        public ShipDecoratorRed(Ship ship) : base(ship)
         {
         }
 

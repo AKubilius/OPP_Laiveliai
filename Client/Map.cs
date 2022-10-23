@@ -67,25 +67,46 @@ namespace Client
             });
         }
 
-        private void ResetPicture(Ship player, Skin skin)
+        private void ResetImage(ShipDecorator player)
         {
-            switch (skin)
+            Bitmap image = null;
+            switch (player.GetSkin())
             {
                 case Skin.White:
-                    _image = Properties.Resources.shipWhite;
+                    image = Properties.Resources.shipWhite;
                     break;
                 case Skin.Red:
-                    _image = Properties.Resources.shipRed;
+                    image = Properties.Resources.shipRed;
+                    break;
+                case Skin.Blue:
+                    image = Properties.Resources.shipBlue;
+                    break;
+                case Skin.Yellow:
+                    image = Properties.Resources.shipYellow;
                     break;
             }
-            player.Image.Image = _image;
+            player.Ship.Image.Image = image;
         }
 
         private Ship NewShip(string playerName, Skin skin)
         {
             Ship ship = new Ship(playerName);
-            ResetPicture(ship, skin);
-            ships[playerName] = new ShipDecorator(ship);
+            switch (skin)
+            {
+                case Skin.White:
+                    ships[playerName] = new ShipDecoratorWhite(ship);
+                    break;
+                case Skin.Red:
+                    ships[playerName] = new ShipDecoratorRed(ship);
+                    break;
+                case Skin.Blue:
+                    ships[playerName] = new ShipDecoratorBlue(ship);
+                    break;
+                case Skin.Yellow:
+                    ships[playerName] = new ShipDecoratorYellow(ship);
+                    break;
+            }
+            ResetImage(ships[playerName]);
             ((System.ComponentModel.ISupportInitialize)(ship.Image)).BeginInit();
             this.Controls.Add(ship.Image);
             this.Controls.Add(ship.Label);
@@ -109,13 +130,13 @@ namespace Client
                     Ship opponent = null;
                     if (!ships.ContainsKey(location.ShipName))
                     {
-                        opponent = NewShip(location.ShipName, _skin);
+                        opponent = NewShip(location.ShipName, (Skin)location.Skin);
                     }
                     else
                     {
                         opponent = ships[location.ShipName].Ship;
+                        ResetImage(ships[location.ShipName]);
                     }
-                    ResetPicture(opponent, (Skin)location.Skin);
                     opponent.Image.Location = new Point(location.XAxis, location.YAxis);
                     opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
                     opponent.Health.Location = new Point(location.XAxis + 6, location.YAxis + 50);
@@ -210,18 +231,18 @@ namespace Client
                 switch (e.KeyCode)
                 {
                     case Keys.Left:
-                        ResetPicture(player, _skin);
+                        ResetImage(ships[_playerName]);
                         player.Image.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
                         break;
                     case Keys.Right:
-                        ResetPicture(player, _skin);
+                        ResetImage(ships[_playerName]);
                         break;
                     case Keys.Down:
-                        ResetPicture(player, _skin);
+                        ResetImage(ships[_playerName]);
                         player.Image.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
                         break;
                     case Keys.Up:
-                        ResetPicture(player, _skin);
+                        ResetImage(ships[_playerName]);
                         player.Image.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
                         break;
                 }

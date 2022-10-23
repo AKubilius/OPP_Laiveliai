@@ -38,6 +38,8 @@ namespace Client
             this.gameTitle = new System.Windows.Forms.Label();
             this.loggedInAs = new System.Windows.Forms.Label();
             this.SkinGroupBox = new System.Windows.Forms.GroupBox();
+            this.Yellow = new System.Windows.Forms.RadioButton();
+            this.Blue = new System.Windows.Forms.RadioButton();
             this.Red = new System.Windows.Forms.RadioButton();
             this.White = new System.Windows.Forms.RadioButton();
             this.SkinGroupBox.SuspendLayout();
@@ -120,14 +122,40 @@ namespace Client
             // 
             // SkinGroupBox
             // 
+            this.SkinGroupBox.Controls.Add(this.Yellow);
+            this.SkinGroupBox.Controls.Add(this.Blue);
             this.SkinGroupBox.Controls.Add(this.Red);
             this.SkinGroupBox.Controls.Add(this.White);
-            this.SkinGroupBox.Location = new System.Drawing.Point(389, 310);
+            this.SkinGroupBox.Location = new System.Drawing.Point(386, 318);
             this.SkinGroupBox.Name = "SkinGroupBox";
-            this.SkinGroupBox.Size = new System.Drawing.Size(250, 96);
+            this.SkinGroupBox.Size = new System.Drawing.Size(250, 163);
             this.SkinGroupBox.TabIndex = 7;
             this.SkinGroupBox.TabStop = false;
             this.SkinGroupBox.Text = "Choose Skin:";
+            // 
+            // Yellow
+            // 
+            this.Yellow.AutoSize = true;
+            this.Yellow.Location = new System.Drawing.Point(21, 116);
+            this.Yellow.Name = "Yellow";
+            this.Yellow.Size = new System.Drawing.Size(73, 24);
+            this.Yellow.TabIndex = 8;
+            this.Yellow.TabStop = true;
+            this.Yellow.Text = "Yellow";
+            this.Yellow.UseVisualStyleBackColor = true;
+            this.Yellow.CheckedChanged += new System.EventHandler(this.Yellow_CheckedChanged);
+            // 
+            // Blue
+            // 
+            this.Blue.AutoSize = true;
+            this.Blue.Location = new System.Drawing.Point(21, 86);
+            this.Blue.Name = "Blue";
+            this.Blue.Size = new System.Drawing.Size(59, 24);
+            this.Blue.TabIndex = 9;
+            this.Blue.TabStop = true;
+            this.Blue.Text = "Blue";
+            this.Blue.UseVisualStyleBackColor = true;
+            this.Blue.CheckedChanged += new System.EventHandler(this.Blue_CheckedChanged);
             // 
             // Red
             // 
@@ -189,5 +217,7 @@ namespace Client
         private GroupBox SkinGroupBox;
         private RadioButton White;
         private RadioButton Red;
+        private RadioButton Blue;
+        private RadioButton Yellow;
     }
 }

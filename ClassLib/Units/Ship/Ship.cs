@@ -2,7 +2,7 @@
 
 namespace ClassLib.Units.Ship
 {
-    public class Ship : Unit, IShip
+    public class Ship : Unit
     {
         public ProgressBar Health { get; set; }
 
@@ -34,11 +34,6 @@ namespace ClassLib.Units.Ship
         {
             base.Dispose();
             Health.Dispose();
-        }
-
-        public Skin GetSkin()
-        {
-            return Skin.White;
         }
     }
 }

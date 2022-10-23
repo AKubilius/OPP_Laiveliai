@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ClassLib.Units.Ship
+﻿namespace ClassLib.Units.Ship
 {
     public interface IShip
     {
@@ -14,6 +8,8 @@ namespace ClassLib.Units.Ship
     public enum Skin
     {
         White,
-        Red
+        Red,
+        Blue,
+        Yellow
     }
 }

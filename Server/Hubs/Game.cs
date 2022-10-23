@@ -192,10 +192,9 @@ namespace Server.Hubs
             lock (_lockerMatchmaking)
             {
                 _playersInMatchmaking.Add(player);
-                //opponent = _playersInMatchmaking.FirstOrDefault(x => x.ConnectionId != player.ConnectionId);
             }
 
-            if (_match.Players.Count == 3)
+            if (_match.Players.Count == 10)
             {
                 matchmaking.Response = "InMatchmakingQueue";
                 answer = new Command("Matchmaking", JsonConvert.SerializeObject(matchmaking));

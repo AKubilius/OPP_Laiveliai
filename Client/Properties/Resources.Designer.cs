@@ -63,6 +63,16 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap shipBlue {
+            get {
+                object obj = ResourceManager.GetObject("shipBlue", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap shipRed {
             get {
                 object obj = ResourceManager.GetObject("shipRed", resourceCulture);
@@ -76,6 +86,16 @@ namespace Client.Properties {
         internal static System.Drawing.Bitmap shipWhite {
             get {
                 object obj = ResourceManager.GetObject("shipWhite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap shipYellow {
+            get {
+                object obj = ResourceManager.GetObject("shipYellow", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
