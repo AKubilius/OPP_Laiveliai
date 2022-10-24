@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using ClassLib.Units.Ship;
 using ClassLib.Units.Bullet;
 using ClassLib;
+using ClassLib.Builder;
 using static ClassLib.Command;
 using Newtonsoft.Json;
 
@@ -20,6 +21,10 @@ namespace Client
         Bitmap _image;
         Keys _key;
         Skin _skin;
+
+        Director _director;
+        ShipBuilder _shipBuilder;
+
 
         public Map(HubConnection hubConnection, string playerName, int startingId, int randomY, Game mainMenu)
         {
@@ -90,7 +95,15 @@ namespace Client
 
         private Ship NewShip(string playerName, Skin skin)
         {
-            Ship ship = new Ship(playerName);
+
+            _director = new Director();
+            _shipBuilder = new ShipBuilder();
+
+            _director.Builder = _shipBuilder;
+            _director.BuildSimpleShip(playerName);
+
+            Ship ship = _shipBuilder.GetShip();
+
             switch (skin)
             {
                 case Skin.White:
