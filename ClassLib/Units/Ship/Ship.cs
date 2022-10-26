@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using ClassLib.Strategy;
+using System.Windows.Forms;
 
 namespace ClassLib.Units.Ship
 {
@@ -8,6 +9,8 @@ namespace ClassLib.Units.Ship
 
         public int Speed { get; set; }
         public int Power { get; set; }
+
+        private IStrategy _strategy;
 
         public Ship(string shipName)
         {
