@@ -12,5 +12,6 @@ namespace ClassLib.Builder
         void AddBody(string shipName);
         void AddSpeed();
         void AddPower();
+        void AddStrategy();
     }
 }

@@ -1,4 +1,6 @@
 ﻿using ClassLib.Strategy;
+using ClassLib.Units.Bullet;
+using Microsoft.AspNetCore.SignalR.Client;
 using System.Windows.Forms;
 
 namespace ClassLib.Units.Ship
@@ -10,7 +12,7 @@ namespace ClassLib.Units.Ship
         public int Speed { get; set; }
         public int Power { get; set; }
 
-        private IStrategy _strategy;
+        public IStrategy Strategy { get; set; }
 
         public Ship(string shipName)
         {
@@ -41,10 +43,25 @@ namespace ClassLib.Units.Ship
 
         }
 
+        public void SetStrategy(IStrategy strategy)
+        {
+            this.Strategy = strategy;
+        }
+
+        public IStrategy GetStrategy()
+        {
+            return this.Strategy;
+        }
+
         public override void Dispose()
         {
             base.Dispose();
             Health.Dispose();
+        }
+
+        public void Shoot(object weapon, Form form, string playerName, HubConnection hubConnection, int bulletId)
+        {
+            Strategy.DoAlgorithm(weapon, form, playerName, hubConnection, bulletId);
         }
     }
 }

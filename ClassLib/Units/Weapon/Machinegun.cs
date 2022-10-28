@@ -1,27 +1,18 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using ClassLib.Units.Bullet;
+using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
-using System.Drawing;
-using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ClassLib.Units.Bullet;
 using static ClassLib.Command;
-using Timer = System.Windows.Forms.Timer;
 
-namespace ClassLib.Units.Bullet
+namespace ClassLib.Units
 {
-    public class Bullet
+    public class Machinegun : Weapon
     {
-        public string direction; // creating a public string called direction
-        public int speed = 20; // creating a integer called speed and assigning a value of 20
-        PictureBox bullet = new PictureBox(); // create a picture box 
-        Timer tm = new Timer(); // create a new timer called tm. 
-
-        public int bulletLeft; // create a new public integer
-        public int bulletTop; // create a new public integer
-
-        public HubConnection _hubConnection;
-        public string _playerName;
-        public int _bulletId;
-
-        private Size _clientSize;
 
         public void mkBullet(Form form, string playerName, HubConnection hubConnection, int bulletId)
         {
@@ -43,6 +34,7 @@ namespace ClassLib.Units.Bullet
             tm.Tick += new EventHandler(tm_Tick); // assignment the timer with an event
             tm.Start(); // start the timer
         }
+
         private async Task SendAsync(Command cmd)
         {
             await _hubConnection.SendAsync("Message", cmd);

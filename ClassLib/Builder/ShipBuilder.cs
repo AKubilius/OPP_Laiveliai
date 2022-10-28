@@ -1,4 +1,5 @@
-﻿using ClassLib.Units.Ship;
+﻿using ClassLib.Strategy;
+using ClassLib.Units.Ship;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,11 @@ namespace ClassLib.Builder
         public void AddSpeed()
         {
             _ship.Speed = 10;
+        }
+
+        public void AddStrategy()
+        {
+            _ship.SetStrategy(new AttackBullet());
         }
 
         public Ship GetShip()

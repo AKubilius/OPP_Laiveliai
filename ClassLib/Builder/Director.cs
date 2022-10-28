@@ -20,12 +20,14 @@ namespace ClassLib.Builder
             _builder.AddSpeed();
             _builder.AddPower();
             _builder.AddBody(shipName);
+            _builder.AddStrategy();
         }
 
         public void BuildNotMovingShip(string shipName)
         {
             _builder.AddPower();
             _builder.AddBody(shipName);
+            _builder.AddStrategy();
         }
     }
 }

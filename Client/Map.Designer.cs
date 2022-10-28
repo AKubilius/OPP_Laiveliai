@@ -32,6 +32,7 @@ namespace Client
         {
             this.components = new System.ComponentModel.Container();
             this.moveTimer = new System.Windows.Forms.Timer(this.components);
+            this.WeaponName = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // moveTimer
@@ -40,15 +41,27 @@ namespace Client
             this.moveTimer.Interval = 20;
             this.moveTimer.Tick += new System.EventHandler(this.moveTimerEvent);
             // 
+            // WeaponName
+            // 
+            this.WeaponName.AutoSize = true;
+            this.WeaponName.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.WeaponName.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.WeaponName.Location = new System.Drawing.Point(1464, 749);
+            this.WeaponName.Name = "WeaponName";
+            this.WeaponName.Size = new System.Drawing.Size(108, 19);
+            this.WeaponName.TabIndex = 0;
+            this.WeaponName.Text = "MachineGun";
+            // 
             // Map
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.ClientSize = new System.Drawing.Size(1837, 1061);
+            this.ClientSize = new System.Drawing.Size(1607, 796);
+            this.Controls.Add(this.WeaponName);
             this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.Location = new System.Drawing.Point(500, 500);
-            this.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Map";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Map";
@@ -57,6 +70,7 @@ namespace Client
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.keypress);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.keyisup);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -64,6 +78,7 @@ namespace Client
 
         private Dictionary<string, ShipDecorator> ships = new Dictionary<string, ShipDecorator>();
         private System.Windows.Forms.Timer moveTimer;
+        private Label WeaponName;
     }
 }
 

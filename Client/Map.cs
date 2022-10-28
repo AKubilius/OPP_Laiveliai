@@ -7,6 +7,8 @@ using ClassLib;
 using ClassLib.Builder;
 using static ClassLib.Command;
 using Newtonsoft.Json;
+using ClassLib.Strategy;
+using ClassLib.Units;
 
 namespace Client
 {
@@ -24,6 +26,8 @@ namespace Client
 
         Director _director;
         ShipBuilder _shipBuilder;
+
+
 
 
         public Map(HubConnection hubConnection, string playerName, int startingId, int randomY, Game mainMenu)
@@ -305,6 +309,10 @@ namespace Client
             {
                 shoot(facing);
             }
+            if (e.KeyCode == Keys.Z)
+            {
+                ChangeWeapon();
+            }
 
         }
 
@@ -318,15 +326,40 @@ namespace Client
             
         }
 
+        private void ChangeWeapon()
+        {
+            if (player.GetStrategy() is AttackBullet)
+            {
+                WeaponName.Text = "Torpedo";
+                player.SetStrategy(new AttackTorpedo());
+            }
+            else if (player.GetStrategy() is AttackTorpedo)
+            {
+                WeaponName.Text = "Machinegun";
+                player.SetStrategy(new AttackBullet());
+            }
+        }
+
         private void shoot(string direct)
         {
             // this is the function thats makes the new bullets in this game
 
-            Bullet shoot = new Bullet(); // create a new instance of the bullet class
-            shoot.direction = direct; // assignment the direction to the bullet
-            shoot.bulletLeft = player.Image.Left + (player.Image.Width / 2); // place the bullet to left half of the player
-            shoot.bulletTop = player.Image.Top + (player.Image.Height / 2); // place the bullet on top half of the player
-            shoot.mkBullet(this, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode()); // run the function mkbullet from the bullet class. 
+            Weapon weaponBullet;
+
+            if (player.GetStrategy() is AttackBullet)
+                weaponBullet = new Machinegun();
+            else
+                weaponBullet = new Torpedo();
+
+
+            weaponBullet.direction = direct; // assignment the direction to the bullet
+            weaponBullet.bulletLeft = player.Image.Left + (player.Image.Width / 2); // place the bullet to left half of the player
+            weaponBullet.bulletTop = player.Image.Top + (player.Image.Height / 2); // place the bullet on top half of the player
+
+            player.Shoot(weaponBullet, this, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode());
+
+
+            //shoot.mkBullet(this, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode()); // run the function mkbullet from the bullet class. 
 
         }
 
