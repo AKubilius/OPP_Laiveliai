@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClassLib.Strategy
 {
-    public class AttackBullet : IStrategy
+    public class AttackMachinegun : IStrategy
     {
         public object DoAlgorithm(object weapon, Form form, string playerName, HubConnection hubConnection, int bulletId)
         {

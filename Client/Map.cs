@@ -328,7 +328,7 @@ namespace Client
 
         private void ChangeWeapon()
         {
-            if (player.GetStrategy() is AttackBullet)
+            if (player.GetStrategy() is AttackMachinegun)
             {
                 WeaponName.Text = "Torpedo";
                 player.SetStrategy(new AttackTorpedo());
@@ -336,7 +336,7 @@ namespace Client
             else if (player.GetStrategy() is AttackTorpedo)
             {
                 WeaponName.Text = "Machinegun";
-                player.SetStrategy(new AttackBullet());
+                player.SetStrategy(new AttackMachinegun());
             }
         }
 
@@ -346,7 +346,7 @@ namespace Client
 
             Weapon weaponBullet;
 
-            if (player.GetStrategy() is AttackBullet)
+            if (player.GetStrategy() is AttackMachinegun)
                 weaponBullet = new Machinegun();
             else
                 weaponBullet = new Torpedo();

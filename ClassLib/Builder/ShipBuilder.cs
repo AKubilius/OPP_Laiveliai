@@ -58,7 +58,7 @@ namespace ClassLib.Builder
 
         public void AddStrategy()
         {
-            _ship.SetStrategy(new AttackBullet());
+            _ship.SetStrategy(new AttackMachinegun());
         }
 
         public Ship GetShip()
