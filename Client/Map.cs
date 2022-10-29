@@ -64,10 +64,9 @@ namespace Client
                         UpdateLocation(cmd);
                         break;
                     case "LeftMatch":
-                        Ship ship = null;
                         if (ships.ContainsKey(cmd.Content))
                         {
-                            ship = ships[cmd.Content].Ship;
+                            var ship = ships[cmd.Content].Ship;
                             ships.Remove(cmd.Content);
                             ship.Dispose();
                         }
