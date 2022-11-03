@@ -16,10 +16,9 @@ namespace Client
     {
         HubConnection _hubConnection;
         string _playerName;
-        Ship player;
+        internal Ship player;
         Game _mainMenu;
-        bool _isForcedToLeave;
-        Dictionary<int, PictureBox> _bullets;
+        internal Dictionary<int, PictureBox> bullets;
         Bitmap _image;
         Keys _key;
         Skin _skin;
@@ -27,15 +26,13 @@ namespace Client
         Director _director;
         ShipBuilder _shipBuilder;
 
-
-
+        CommandExecutor _commandExecutor;
 
         public Map(HubConnection hubConnection, string playerName, int startingId, int randomY, Game mainMenu)
         {
             this.FormClosing += new FormClosingEventHandler(Map_Closing);
-            _isForcedToLeave = false;
             _mainMenu = mainMenu;
-            _bullets = new Dictionary<int, PictureBox>();
+            bullets = new Dictionary<int, PictureBox>();
 
             InitializeComponent();
 
@@ -55,27 +52,15 @@ namespace Client
 
             _hubConnection = hubConnection;
 
+            _commandExecutor = new MapCommandExecutorAdapter(this);
 
             _hubConnection.On<Command>("Message", (cmd) =>
             {
-                switch (cmd.Name)
-                {
-                    case "Location":
-                        UpdateLocation(cmd);
-                        break;
-                    case "LeftMatch":
-                        if (ships.ContainsKey(cmd.Content))
-                        {
-                            var ship = ships[cmd.Content].Ship;
-                            ships.Remove(cmd.Content);
-                            ship.Dispose();
-                        }
-                        break;
-                }
+                _commandExecutor.Execute(cmd);
             });
         }
 
-        private void ResetImage(ShipDecorator player)
+        internal void ResetImage(ShipDecorator player)
         {
             Bitmap image = null;
             switch (player.GetSkin())
@@ -96,7 +81,7 @@ namespace Client
             player.Ship.Image.Image = image;
         }
 
-        private Ship NewShip(string playerName, Skin skin)
+        internal Ship NewShip(string playerName, Skin skin)
         {
 
             _director = new Director();
@@ -136,70 +121,6 @@ namespace Client
             await _hubConnection.SendAsync("Message", cmd);
         }
 
-        public void UpdateLocation(Command cmd)
-        {
-            Location location = JsonConvert.DeserializeObject<Location>(cmd.Content);
-
-            switch (location.Response)
-            {
-                case "UpdateLocation":
-                    Ship opponent = null;
-                    if (!ships.ContainsKey(location.ShipName))
-                    {
-                        opponent = NewShip(location.ShipName, (Skin)location.Skin);
-                    }
-                    else
-                    {
-                        opponent = ships[location.ShipName].Ship;
-                        ResetImage(ships[location.ShipName]);
-                    }
-                    opponent.Image.Location = new Point(location.XAxis, location.YAxis);
-                    opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
-                    opponent.Health.Location = new Point(location.XAxis + 6, location.YAxis + 50);
-                    opponent.Label.Text = location.ShipName;
-                    switch (location.Facing)
-                    {
-                        case "right":
-                            break;
-                        case "left":
-                            opponent.Image.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                            break;
-                        case "up":
-                            opponent.Image.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                            break;
-                        case "down":
-                            opponent.Image.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                            break;
-                        default:
-                            break;
-                    }
-                    //opponent.Image.Image = location.Facing.Equals("right") ? Properties.Resources.shipRight : Properties.Resources.shipLeft;
-                    break;
-
-                case "UpdateBulletLocation":
-                    if (!_bullets.ContainsKey(location.BulletID))
-                    {
-                        PictureBox bullet = new PictureBox();
-                        bullet.BackColor = System.Drawing.Color.Red; // set the colour white for the bullet
-                        bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
-                        bullet.Tag = "bullet"; // set the tag to bullet
-                        bullet.BringToFront(); // bring the bullet to front of other objects
-                        this.Controls.Add(bullet); // add the bullet to the screen
-                        _bullets[location.BulletID] = bullet;
-                    }
-                    PictureBox currentBullet = _bullets[location.BulletID];
-                    currentBullet.Location = new Point(location.XAxis, location.YAxis);
-
-                    if (currentBullet.Bounds.IntersectsWith(player.Image.Bounds))
-                    {
-                        if (player.Health.Value > 1)
-                            player.Health.Value -= 5;
-                        this.Controls.Remove(currentBullet);
-                    }
-
-                    break;
-            }
-        }
 
         bool moveRight, moveLeft, moveUp, moveDown;
         int speed = 8;
@@ -317,12 +238,12 @@ namespace Client
 
         private void keypress(object sender, KeyPressEventArgs e)
         {
-            
+
         }
 
         private async void keypress(object sender, KeyEventArgs e)
         {
-            
+
         }
 
         private void ChangeWeapon()

@@ -76,7 +76,7 @@ namespace Client
 
         #endregion
 
-        private Dictionary<string, ShipDecorator> ships = new Dictionary<string, ShipDecorator>();
+        internal Dictionary<string, ShipDecorator> ships = new Dictionary<string, ShipDecorator>();
         private System.Windows.Forms.Timer moveTimer;
         private Label WeaponName;
     }
