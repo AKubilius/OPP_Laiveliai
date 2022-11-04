@@ -54,8 +54,8 @@ namespace Client
             if (!_map.bullets.ContainsKey(location.BulletID))
             {
                 PictureBox bullet = new PictureBox();
-                bullet.BackColor = System.Drawing.Color.Red; // set the colour white for the bullet
-                bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
+                bullet.BackColor = System.Drawing.Color.Red; // set the colour red for the bullet
+                bullet.Size = new Size(location.BulletWidth, location.BulletHeight); // set the size to the bullet to 5 pixel by 5 pixel
                 bullet.Tag = "bullet"; // set the tag to bullet
                 bullet.BringToFront(); // bring the bullet to front of other objects
                 _map.Controls.Add(bullet); // add the bullet to the screen

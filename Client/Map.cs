@@ -277,10 +277,6 @@ namespace Client
             weaponBullet.bulletTop = player.Image.Top + (player.Image.Height / 2); // place the bullet on top half of the player
 
             player.Shoot(weaponBullet, this, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode());
-
-
-            //shoot.mkBullet(this, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode()); // run the function mkbullet from the bullet class. 
-
         }
 
         private async void Map_Closing(object sender, CancelEventArgs e)
