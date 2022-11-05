@@ -30,15 +30,17 @@ namespace ClassLib
             }
         }
 
-        public struct MatchEvents
+        public struct MatchEvent
         {
             public string Response { get; set; }
+            public string PlayerName { get; set; }
 
-
-            public MatchEvents(string response)
+            public MatchEvent(string response, string playerName)
             {
                 Response = response;
+                PlayerName = playerName;
             }
+
         }
 
         public struct Matchmaking

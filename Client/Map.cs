@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿    using System.ComponentModel;
 using System.Diagnostics;
 using Microsoft.AspNetCore.SignalR.Client;
 using ClassLib.Units.Ship;
@@ -12,7 +12,7 @@ using ClassLib.Units;
 
 namespace Client
 {
-    public partial class Map : Form
+    public partial class Map : Form, ClassLib.Observer.IObserver
     {
         HubConnection _hubConnection;
         string _playerName;
@@ -32,6 +32,8 @@ namespace Client
         {
             this.FormClosing += new FormClosingEventHandler(Map_Closing);
             _mainMenu = mainMenu;
+            _director = new Director();
+            _shipBuilder = new ShipBuilder();
             bullets = new Dictionary<int, PictureBox>();
 
             InitializeComponent();
@@ -50,6 +52,7 @@ namespace Client
             this.StartPosition = FormStartPosition.CenterScreen;
 
 
+
             _hubConnection = hubConnection;
 
             _commandExecutor = new MapCommandExecutorAdapter(this);
@@ -58,6 +61,11 @@ namespace Client
             {
                 _commandExecutor.Execute(cmd);
             });
+        }
+
+        public void RespondToEvent()
+        {
+            eventLabel.Text = "SOME EVENT STARTED, GET READY";
         }
 
         internal void ResetImage(ShipDecorator player)
@@ -83,14 +91,9 @@ namespace Client
 
         internal Ship NewShip(string playerName, Skin skin)
         {
+            Facade facade = new Facade(_director, _shipBuilder);
 
-            _director = new Director();
-            _shipBuilder = new ShipBuilder();
-
-            _director.Builder = _shipBuilder;
-            _director.BuildSimpleShip(playerName);
-
-            Ship ship = _shipBuilder.GetShip();
+            Ship ship = facade.GetShip(playerName);
 
             switch (skin)
             {
@@ -207,7 +210,7 @@ namespace Client
             }
         }
 
-        private void keyisup(object sender, KeyEventArgs e)
+        private async void keyisup(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Left)
             {
@@ -232,6 +235,13 @@ namespace Client
             if (e.KeyCode == Keys.Z)
             {
                 ChangeWeapon();
+            }
+            if(e.KeyCode == Keys.P)
+            {
+                MatchEvent events = new MatchEvent("InitiateEvent", "");
+
+                Command cmd = new Command("MatchEvent", JsonConvert.SerializeObject(events));
+                await SendAsync(cmd);
             }
 
         }
@@ -281,8 +291,8 @@ namespace Client
 
         private async void Map_Closing(object sender, CancelEventArgs e)
         {
-            MatchEvents match = new MatchEvents("LeftMatch");
-            Command cmd = new Command("MatchEvents", JsonConvert.SerializeObject(match));
+            MatchEvent match = new MatchEvent("LeftMatch", _playerName);
+            Command cmd = new Command("MatchEvent", JsonConvert.SerializeObject(match));
             await SendAsync(cmd);
 
             _mainMenu.Visible = true;

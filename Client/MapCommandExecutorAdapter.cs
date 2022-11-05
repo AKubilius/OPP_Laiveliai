@@ -21,17 +21,28 @@ namespace Client
                 case "Location":
                     UpdateLocation(command);
                     break;
-                case "LeftMatch":
-                    if (_map.ships.ContainsKey(command.Content))
-                    {
-                        var ship = _map.ships[command.Content].Ship;
-                        _map.ships.Remove(command.Content);
-                        ship.Dispose();
-                    }
+                case "MatchEvent":
+                    Events(command);
                     break;
             }
             return Task.CompletedTask;
         }
+
+        private void Events(Command cmd)
+        {
+            MatchEvent events = JsonConvert.DeserializeObject<MatchEvent>(cmd.Content);
+
+            switch (events.Response)
+            {
+                case "GlobalEvent":
+                    GlobalEvent();
+                    break;
+                case "LeftMatch":
+                    LeftMatch(events.PlayerName);
+                    break;
+            }
+        }
+
 
         private void UpdateLocation(Command cmd)
         {
@@ -47,6 +58,21 @@ namespace Client
                     UpdateBulletLocation(location);
                     break;
             }
+        }
+
+        private void LeftMatch(string playerName)
+        {
+            if (_map.ships.ContainsKey(playerName))
+            {
+                var ship = _map.ships[playerName].Ship;
+                _map.ships.Remove(playerName);
+                ship.Dispose();
+            }
+        }
+
+        private void GlobalEvent()
+        {
+            _map.RespondToEvent();
         }
 
         private void UpdateBulletLocation(Location location)
