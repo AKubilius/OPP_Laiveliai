@@ -62,7 +62,7 @@ namespace ClassLib.Units
             {
                 bullet.Top += speed; // move the bullet bottom of the screen
             }
-            Location location = new Location("MoveBullet", _playerName, _bulletId, bullet.Location.X, bullet.Location.Y);
+            Location location = new Location("MoveBullet", _playerName, "machinegun", _bulletId, bullet.Size.Width, bullet.Size.Height, bullet.Location.X, bullet.Location.Y);
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
 

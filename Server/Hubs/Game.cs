@@ -1,4 +1,5 @@
 ﻿using ClassLib;
+using ClassLib.Observer;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Win32;
@@ -10,7 +11,7 @@ using static ClassLib.Command;
 
 namespace Server.Hubs
 {
-    public class Game : Hub
+    public class Game : Hub, ISubject
     {
         private static List<Player> _registeredPlayers = new List<Player>();
         private static Match _match = Match.Instance();
@@ -19,6 +20,30 @@ namespace Server.Hubs
 
         private object _lockerRegisteredPlayers = new object();
         private object _lockerMatchmaking = new object();
+        private object _lockerMatch = new object();
+
+        public void Subscribe(Player player)
+        {
+            lock (_lockerMatch)
+            {
+                _match.Players.Add(player);
+            }
+        }
+
+        public void Unsubscribe(Player player)
+        {
+            lock (_lockerMatch)
+            {
+                _match.Players.Remove(player);
+            }
+        }
+
+        public async Task Notify()
+        {
+            MatchEvent events = new MatchEvent("GlobalEvent", "");
+            Command command = new Command("MatchEvent", JsonConvert.SerializeObject(events));
+            await SendAllAsync(command);
+        }
 
 
         public async void Message(Command cmd)
@@ -28,8 +53,8 @@ namespace Server.Hubs
                 case "Authentication":
                     await Authentication(cmd);
                     break;
-                case "MatchEvents":
-                    await MatchEvents(cmd);
+                case "MatchEvent":
+                    await Events(cmd);
                     break;
                 case "Matchmaking":
                     await Matchmaking(cmd);
@@ -141,26 +166,44 @@ namespace Server.Hubs
             }
         }
 
-        public async Task MatchEvents(Command cmd)
+        public async Task Events(Command cmd)
         {
-            
-            // reimplement when singleton match exists
-            MatchEvents matchEvents = JsonConvert.DeserializeObject<MatchEvents>(cmd.Content);
+            MatchEvent events = JsonConvert.DeserializeObject<MatchEvent>(cmd.Content);
 
-            switch (matchEvents.Response)
+            switch (events.Response)
             {
+                case "InitiateEvent":
+                    await Notify();
+                    break;
                 case "LeftMatch":
                     var player = _match.Players.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
                     if (player != null)
                     {
-                        _match.Players.Remove(_match.Players.First(x => x.ConnectionId == Context.ConnectionId));
-                        var cmdResponse = new Command("LeftMatch", player.Name);
+                        Unsubscribe(player);
+                        MatchEvent responseEvent = new MatchEvent("LeftMatch", player.Name);
+                        Command cmdResponse = new Command("MatchEvent", JsonConvert.SerializeObject(responseEvent));
                         await SendAllAsync(cmdResponse);
                     }
-                    break;                   
-                default:
                     break;
             }
+
+            //// reimplement when singleton match exists
+            //MatchEvents matchEvents = JsonConvert.DeserializeObject<MatchEvents>(cmd.Content);
+
+            //switch (matchEvents.Response)
+            //{
+            //    case "LeftMatch":
+            //        var player = _match.Players.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+            //        if (player != null)
+            //        {
+            //            _match.Players.Remove(_match.Players.First(x => x.ConnectionId == Context.ConnectionId));
+            //            var cmdResponse = new Command("LeftMatch", player.Name);
+            //            await SendAllAsync(cmdResponse);
+            //        }
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
 
         public async Task Location(Command cmd)
@@ -225,9 +268,9 @@ namespace Server.Hubs
             {
                 _playersInMatchmaking.Remove(player);
             }
-            //await StartTimer();
-            _match.Players.Add(player);
-            
+
+            Subscribe(player);
+
             matchmaking.Response = "MatchCreated";
 
             matchmaking.StartingID = 0;

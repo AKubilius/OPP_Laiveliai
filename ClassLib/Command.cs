@@ -30,15 +30,17 @@ namespace ClassLib
             }
         }
 
-        public struct MatchEvents
+        public struct MatchEvent
         {
             public string Response { get; set; }
+            public string PlayerName { get; set; }
 
-
-            public MatchEvents(string response)
+            public MatchEvent(string response, string playerName)
             {
                 Response = response;
+                PlayerName = playerName;
             }
+
         }
 
         public struct Matchmaking
@@ -61,7 +63,10 @@ namespace ClassLib
             public string Response { get; set; }
             public string ShipName { get; set; }
             public string Facing { get; set; } = string.Empty;
+            public string BulletType { get; set; } = string.Empty;
             public int BulletID { get; set; } = int.MinValue;
+            public int BulletWidth { get; set; } = 0;
+            public int BulletHeight { get; set; } = 0;
             public int XAxis { get; set; }
             public int YAxis { get; set; }
             public Skin? Skin { get; set; }
@@ -77,11 +82,14 @@ namespace ClassLib
                 Skin = skin;
             }
 
-            public Location(string response, string shipName, int bulletID, int xAxis, int yAxis)
+            public Location(string response, string shipName, string bulletType, int bulletID, int bulletSizeWidth, int bulletSizeHeight, int xAxis, int yAxis)
             {
                 Response = response;
                 ShipName = shipName;
                 BulletID = bulletID;
+                BulletWidth = bulletSizeWidth;
+                BulletHeight = bulletSizeHeight;
+                BulletType = bulletType;
                 XAxis = xAxis;
                 YAxis = yAxis;
                 Skin = null;

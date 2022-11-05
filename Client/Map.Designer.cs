@@ -33,6 +33,7 @@ namespace Client
             this.components = new System.ComponentModel.Container();
             this.moveTimer = new System.Windows.Forms.Timer(this.components);
             this.WeaponName = new System.Windows.Forms.Label();
+            this.eventLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // moveTimer
@@ -52,12 +53,23 @@ namespace Client
             this.WeaponName.TabIndex = 0;
             this.WeaponName.Text = "MachineGun";
             // 
+            // eventLabel
+            // 
+            this.eventLabel.AutoSize = true;
+            this.eventLabel.Font = new System.Drawing.Font("Segoe UI", 26.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.eventLabel.ForeColor = System.Drawing.Color.Azure;
+            this.eventLabel.Location = new System.Drawing.Point(655, 67);
+            this.eventLabel.Name = "eventLabel";
+            this.eventLabel.Size = new System.Drawing.Size(0, 47);
+            this.eventLabel.TabIndex = 1;
+            // 
             // Map
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.HotTrack;
             this.ClientSize = new System.Drawing.Size(1607, 796);
+            this.Controls.Add(this.eventLabel);
             this.Controls.Add(this.WeaponName);
             this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.Location = new System.Drawing.Point(500, 500);
@@ -79,6 +91,7 @@ namespace Client
         internal Dictionary<string, ShipDecorator> ships = new Dictionary<string, ShipDecorator>();
         private System.Windows.Forms.Timer moveTimer;
         private Label WeaponName;
+        private Label eventLabel;
     }
 }
 

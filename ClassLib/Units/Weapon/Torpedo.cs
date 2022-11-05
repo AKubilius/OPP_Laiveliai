@@ -21,7 +21,7 @@ namespace ClassLib.Units
             _hubConnection = hubConnection;
             _playerName = playerName;
             bullet.BackColor = System.Drawing.Color.Black; // set the colour white for the bullet
-            bullet.Size = new Size(10, 10); // set the size to the bullet to 5 pixel by 5 pixel
+            bullet.Size = new Size(15, 10); // set the size to the bullet to 5 pixel by 5 pixel
             bullet.Tag = "bullet"; // set the tag to bullet
             bullet.Left = bulletLeft; // set bullet left 
             bullet.Top = bulletTop; // set bullet right
@@ -29,7 +29,7 @@ namespace ClassLib.Units
             form.Controls.Add(bullet); // add the bullet to the screen
             _clientSize = form.ClientSize;
 
-            tm.Interval = speed; // set the timer interval to speed
+            tm.Interval = 50; // set the timer interval to speed
             tm.Tick += new EventHandler(tm_Tick); // assignment the timer with an event
             tm.Start(); // start the timer
         }
@@ -61,7 +61,7 @@ namespace ClassLib.Units
             {
                 bullet.Top += speed; // move the bullet bottom of the screen
             }
-            Location location = new Location("MoveBullet", _playerName, _bulletId, bullet.Location.X, bullet.Location.Y);
+            Location location = new Location("MoveBullet", _playerName, "torpedo", _bulletId, bullet.Size.Width, bullet.Size.Height, bullet.Location.X, bullet.Location.Y);
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
 
