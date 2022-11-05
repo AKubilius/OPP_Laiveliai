@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Server.Models;
+using System.Numerics;
+using System.Timers;
 using static ClassLib.Command;
 
 namespace Server.Hubs
@@ -36,6 +38,21 @@ namespace Server.Hubs
                     await Location(cmd);
                     break;
             }
+        }
+
+        private Task StartTimer()
+        {
+            System.Timers.Timer aTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Interval = 10000;
+            aTimer.Enabled = true;
+            return Task.CompletedTask;
+        }
+
+        private async void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            var cmd = new Command("ChangeMap", "Red");
+            await SendAllAsync(cmd);
         }
 
         private async Task SendAsync(Command cmd, string callerID)
@@ -126,6 +143,7 @@ namespace Server.Hubs
 
         public async Task MatchEvents(Command cmd)
         {
+            
             // reimplement when singleton match exists
             MatchEvents matchEvents = JsonConvert.DeserializeObject<MatchEvents>(cmd.Content);
 
@@ -139,7 +157,7 @@ namespace Server.Hubs
                         var cmdResponse = new Command("LeftMatch", player.Name);
                         await SendAllAsync(cmdResponse);
                     }
-                    break;
+                    break;                   
                 default:
                     break;
             }
@@ -168,7 +186,7 @@ namespace Server.Hubs
         public async Task Matchmaking(Command cmd)
         {
             Matchmaking matchmaking = JsonConvert.DeserializeObject<Matchmaking>(cmd.Content);
-
+            
             switch (matchmaking.Response)
             {
                 case "JoinMatchmaking":
@@ -185,7 +203,7 @@ namespace Server.Hubs
         {
             Matchmaking matchmaking = new Matchmaking();
             Command answer = null;
-
+            
             var player = _registeredPlayers.FirstOrDefault(x => x.ConnectionId == ConnectionId);
             if (player == null) return;
 
@@ -207,9 +225,9 @@ namespace Server.Hubs
             {
                 _playersInMatchmaking.Remove(player);
             }
-
+            //await StartTimer();
             _match.Players.Add(player);
-
+            
             matchmaking.Response = "MatchCreated";
 
             matchmaking.StartingID = 0;
