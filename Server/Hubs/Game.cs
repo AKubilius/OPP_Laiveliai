@@ -42,7 +42,10 @@ namespace Server.Hubs
         {
             MatchEvent events = new MatchEvent("GlobalEvent", "");
             Command command = new Command("MatchEvent", JsonConvert.SerializeObject(events));
-            await SendAllAsync(command);
+            foreach(var player in _match.Players)
+            {
+                await SendAsync(command, player.ConnectionId);
+            }
         }
 
 
