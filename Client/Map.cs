@@ -9,6 +9,7 @@ using static ClassLib.Command;
 using Newtonsoft.Json;
 using ClassLib.Strategy;
 using ClassLib.Units;
+using ClassLib.Units.Weapons;
 
 namespace Client
 {
@@ -265,6 +266,11 @@ namespace Client
             }
             else if (player.GetStrategy() is AttackTorpedo)
             {
+                WeaponName.Text = "Laser";
+                player.SetStrategy(new AttackLaser());
+            }
+            else if (player.GetStrategy() is AttackLaser)
+            {
                 WeaponName.Text = "Machinegun";
                 player.SetStrategy(new AttackMachinegun());
             }
@@ -277,9 +283,16 @@ namespace Client
             Weapon weaponBullet;
 
             if (player.GetStrategy() is AttackMachinegun)
+            {
                 weaponBullet = new Machinegun();
+            }
             else
-                weaponBullet = new Torpedo();
+            { 
+                if (player.GetStrategy() is AttackTorpedo)
+                    weaponBullet = new Torpedo();
+                else
+                    weaponBullet = new Laser();
+            }
 
 
             weaponBullet.direction = direct; // assignment the direction to the bullet
