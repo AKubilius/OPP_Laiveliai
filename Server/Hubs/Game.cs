@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using Server.Models;
 using System.Numerics;
+using System.Timers;
 using static ClassLib.Command;
 
 namespace Server.Hubs
@@ -62,6 +63,21 @@ namespace Server.Hubs
                     await Location(cmd);
                     break;
             }
+        }
+
+        private Task StartTimer()
+        {
+            System.Timers.Timer aTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Interval = 10000;
+            aTimer.Enabled = true;
+            return Task.CompletedTask;
+        }
+
+        private async void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            var cmd = new Command("ChangeMap", "Red");
+            await SendAllAsync(cmd);
         }
 
         private async Task SendAsync(Command cmd, string callerID)
@@ -213,7 +229,7 @@ namespace Server.Hubs
         public async Task Matchmaking(Command cmd)
         {
             Matchmaking matchmaking = JsonConvert.DeserializeObject<Matchmaking>(cmd.Content);
-
+            
             switch (matchmaking.Response)
             {
                 case "JoinMatchmaking":
@@ -230,7 +246,7 @@ namespace Server.Hubs
         {
             Matchmaking matchmaking = new Matchmaking();
             Command answer = null;
-
+            
             var player = _registeredPlayers.FirstOrDefault(x => x.ConnectionId == ConnectionId);
             if (player == null) return;
 
