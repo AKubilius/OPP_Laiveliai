@@ -9,7 +9,7 @@ namespace Client
     public partial class Game : Form
     {
 
-        HubConnection _hubConnection;
+        public HubConnection _hubConnection;
         Skin _skin;
         CommandExecutor _commandExecutor;
 
@@ -25,6 +25,10 @@ namespace Client
                 .WithUrl("https://localhost:7150/game")
                 .WithAutomaticReconnect()
                 .Build();
+            
+            _hubConnection.ServerTimeout = TimeSpan.FromMinutes(30);
+
+            _hubConnection.HandshakeTimeout = TimeSpan.FromMinutes(30);
 
             _commandExecutor = new GameCommandExecutorAdapter(this);
 

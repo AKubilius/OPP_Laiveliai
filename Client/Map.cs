@@ -16,8 +16,8 @@ namespace Client
     public partial class Map : Form, ClassLib.Observer.IObserver
     {
         HubConnection _hubConnection;
-        string _playerName;
-        internal Ship player;
+        public string _playerName;
+        public Ship player;
         Game _mainMenu;
         internal Dictionary<int, PictureBox> bullets;
         Bitmap _image;
@@ -126,37 +126,37 @@ namespace Client
         }
 
 
-        bool moveRight, moveLeft, moveUp, moveDown;
+        public bool moveRight, moveLeft, moveUp, moveDown;
         int speed = 8;
         string facing = "up";
 
-        private async void moveTimerEvent(object sender, EventArgs e)
+        public async void moveTimerEvent(object sender, EventArgs e)
         {
             if (moveLeft && player.Image.Left > 0)
             {
-                player.Image.Left -= speed;
-                player.Label.Left -= speed;
-                player.Health.Left -= speed;
+                player.Image.Left -= Math.Min(player.Image.Left, speed);
+                player.Label.Left -= Math.Min(player.Image.Left, speed);
+                player.Health.Left -= Math.Min(player.Image.Left, speed);
             }
 
-            if (moveRight && player.Image.Right < ClientSize.Width)
+            if (moveRight && player.Image.Left < ClientSize.Width)
             {
-                player.Image.Left += speed;
-                player.Label.Left += speed;
-                player.Health.Left += speed;
+                player.Image.Left += Math.Min(ClientSize.Width - player.Image.Left, speed);
+                player.Label.Left += Math.Min(ClientSize.Width - player.Image.Left, speed);
+                player.Health.Left += Math.Min(ClientSize.Width - player.Image.Left, speed);
             }
 
             if (moveUp && player.Image.Top > 0)
             {
-                player.Image.Top -= speed;
-                player.Label.Top -= speed;
-                player.Health.Top -= speed;
+                player.Image.Top -= Math.Min(player.Image.Top, speed);
+                player.Label.Top -= Math.Min(player.Image.Top, speed);
+                player.Health.Top -= Math.Min(player.Image.Top, speed);
             }
             if (moveDown && player.Image.Top < ClientSize.Height)
             {
-                player.Image.Top += speed;
-                player.Label.Top += speed;
-                player.Health.Top += speed;
+                player.Image.Top += Math.Min(ClientSize.Height - player.Image.Top, speed);
+                player.Label.Top += Math.Min(ClientSize.Height - player.Image.Top, speed);
+                player.Health.Top += Math.Min(ClientSize.Height - player.Image.Top, speed);
             }
 
             Location location = new Location("MovePlayer", _playerName, facing, player.Image.Location.X, player.Image.Location.Y, _skin);
@@ -165,7 +165,7 @@ namespace Client
             await SendAsync(cmd);
 
         }
-        private async void keyisdown(object sender, KeyEventArgs e)
+        public async void keyisdown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != _key)
             {
