@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassLib", "ClassLib\ClassL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{966F2B2E-8BCA-4F8F-BDB1-8D9DDA2158B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testavimas", "Testavimas\Testavimas.csproj", "{C92FA675-D9F7-4F4B-A90D-5A190CEF3B31}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{966F2B2E-8BCA-4F8F-BDB1-8D9DDA2158B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{966F2B2E-8BCA-4F8F-BDB1-8D9DDA2158B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{966F2B2E-8BCA-4F8F-BDB1-8D9DDA2158B6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C92FA675-D9F7-4F4B-A90D-5A190CEF3B31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C92FA675-D9F7-4F4B-A90D-5A190CEF3B31}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C92FA675-D9F7-4F4B-A90D-5A190CEF3B31}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C92FA675-D9F7-4F4B-A90D-5A190CEF3B31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
