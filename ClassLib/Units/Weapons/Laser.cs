@@ -6,14 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ClassLib.Units.Bullet;
 using static ClassLib.Command;
 
-namespace ClassLib.Units
+namespace ClassLib.Units.Weapons
 {
-    public class Machinegun : Weapon
+    public class Laser : Weapon
     {
-
         public void mkBullet(Form form, string playerName, HubConnection hubConnection, int bulletId)
         {
             // this function will add the bullet to the game play
@@ -21,8 +19,8 @@ namespace ClassLib.Units
             _bulletId = bulletId;
             _hubConnection = hubConnection;
             _playerName = playerName;
-            bullet.BackColor = System.Drawing.Color.Wheat; // set the colour white for the bullet
-            bullet.Size = new Size(5, 5); // set the size to the bullet to 5 pixel by 5 pixel
+            bullet.BackColor = System.Drawing.Color.GreenYellow; // set the colour white for the bullet
+            bullet.Size = new Size(100, 5); // set the size to the bullet to 5 pixel by 5 pixel
             bullet.Tag = "bullet"; // set the tag to bullet
             bullet.Left = bulletLeft; // set bullet left 
             bullet.Top = bulletTop; // set bullet right
@@ -30,7 +28,7 @@ namespace ClassLib.Units
             form.Controls.Add(bullet); // add the bullet to the screen
             _clientSize = form.ClientSize;
 
-            tm.Interval = speed; // set the timer interval to speed
+            tm.Interval = 5; // set the timer interval to speed
             tm.Tick += new EventHandler(tm_Tick); // assignment the timer with an event
             tm.Start(); // start the timer
         }

@@ -24,5 +24,11 @@ namespace ClassLib
             _director.BuildSimpleShip(playerName);
             return _shipBuilder.GetShip();
         }
+
+        public Ship GetNotMovingShip(string playerName)
+        {
+            _director.BuildNotMovingShip(playerName);
+            return _shipBuilder.GetShip();
+        }
     }
 }
