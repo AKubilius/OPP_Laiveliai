@@ -62,12 +62,7 @@ namespace Client
 
         private void LeftMatch(string playerName)
         {
-            if (_map.ships.ContainsKey(playerName))
-            {
-                var ship = _map.ships[playerName].Ship;
-                _map.ships.Remove(playerName);
-                ship.Dispose();
-            }
+            _map.flyweightShipFactory.RemoveShip(playerName);
         }
 
         private void GlobalEvent()
@@ -100,16 +95,8 @@ namespace Client
 
         private void UpdateLocation(Location location)
         {
-            Ship opponent = null;
-            if (!_map.ships.ContainsKey(location.ShipName))
-            {
-                opponent = _map.NewShip(location.ShipName, (Skin)location.Skin);
-            }
-            else
-            {
-                opponent = _map.ships[location.ShipName].Ship;
-                _map.ResetImage(_map.ships[location.ShipName]);
-            }
+            Ship opponent = _map.flyweightShipFactory.GetShip(location.ShipName, (Skin)location.Skin).Ship;
+            _map.ResetImage(_map.flyweightShipFactory.GetShip(location.ShipName));
             opponent.Image.Location = new Point(location.XAxis, location.YAxis);
             opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
             opponent.Health.Location = new Point(location.XAxis + 6, location.YAxis + 50);

@@ -24,8 +24,10 @@ namespace Client
         Keys _key;
         Skin _skin;
 
-        Director _director;
-        ShipBuilder _shipBuilder;
+        //Director _director;
+        //ShipBuilder _shipBuilder;
+
+        internal FlyweightShipFactory flyweightShipFactory;
 
         CommandExecutor _commandExecutor;
 
@@ -33,16 +35,17 @@ namespace Client
         {
             this.FormClosing += new FormClosingEventHandler(Map_Closing);
             _mainMenu = mainMenu;
-            _director = new Director();
-            _shipBuilder = new ShipBuilder();
+            //_director = new Director();
+            //_shipBuilder = new ShipBuilder();
             bullets = new Dictionary<int, PictureBox>();
+            flyweightShipFactory = new FlyweightShipFactory(this);
 
             InitializeComponent();
 
             _skin = _mainMenu.GetSkin();
-            NewShip(playerName, _skin);
+            //GetShip(playerName, _skin);
 
-            player = ships[playerName].Ship;
+            player = flyweightShipFactory.GetShip(playerName, _skin).Ship;
             player.Label.Text = playerName;
             player.Image.Location = new Point(100 + (startingId * 500), randomY);
             player.Health.Location = new Point(player.Image.Location.X + 6, player.Image.Location.Y + 50);
@@ -90,28 +93,10 @@ namespace Client
             player.Ship.Image.Image = image;
         }
 
-        internal Ship NewShip(string playerName, Skin skin)
+        internal Ship GetShip(string playerName, Skin skin)
         {
-            Facade facade = new Facade(_director, _shipBuilder);
-
-            Ship ship = facade.GetShip(playerName);
-
-            switch (skin)
-            {
-                case Skin.White:
-                    ships[playerName] = new ShipDecoratorWhite(ship);
-                    break;
-                case Skin.Red:
-                    ships[playerName] = new ShipDecoratorRed(ship);
-                    break;
-                case Skin.Blue:
-                    ships[playerName] = new ShipDecoratorBlue(ship);
-                    break;
-                case Skin.Yellow:
-                    ships[playerName] = new ShipDecoratorYellow(ship);
-                    break;
-            }
-            ResetImage(ships[playerName]);
+            Ship ship = flyweightShipFactory.GetShip(playerName, skin).Ship;
+            ResetImage(flyweightShipFactory.GetShip(playerName));
             ((System.ComponentModel.ISupportInitialize)(ship.Image)).BeginInit();
             this.Controls.Add(ship.Image);
             this.Controls.Add(ship.Label);
@@ -172,18 +157,18 @@ namespace Client
                 switch (e.KeyCode)
                 {
                     case Keys.Left:
-                        ResetImage(ships[_playerName]);
+                        ResetImage(flyweightShipFactory.GetShip(_playerName));
                         player.Image.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
                         break;
                     case Keys.Right:
-                        ResetImage(ships[_playerName]);
+                        ResetImage(flyweightShipFactory.GetShip(_playerName));
                         break;
                     case Keys.Down:
-                        ResetImage(ships[_playerName]);
+                        ResetImage(flyweightShipFactory.GetShip(_playerName));
                         player.Image.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
                         break;
                     case Keys.Up:
-                        ResetImage(ships[_playerName]);
+                        ResetImage(flyweightShipFactory.GetShip(_playerName));
                         player.Image.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
                         break;
                 }
