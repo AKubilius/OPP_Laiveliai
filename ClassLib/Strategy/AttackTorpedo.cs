@@ -1,4 +1,5 @@
-﻿using ClassLib.Units;
+﻿using ClassLib.Strategy.Template;
+using ClassLib.Units;
 using ClassLib.Units.Bullet;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
@@ -13,10 +14,10 @@ namespace ClassLib.Strategy
 {
     public class AttackTorpedo : IStrategy
     {
-        public object DoAlgorithm(object weapon, Form form, string playerName, HubConnection hubConnection, int bulletId)
+        public object DoAlgorithm(Weapon weapon, Form form, string playerName, HubConnection hubConnection, int bulletId)
         {
-            var torpedo = weapon as Torpedo;
-            torpedo.mkBullet(form, playerName, hubConnection, bulletId);
+            ClientClass.ClientCode(new TorpedoTemplate(), weapon, form, playerName, hubConnection, bulletId);
+
             return true;
         }
     }

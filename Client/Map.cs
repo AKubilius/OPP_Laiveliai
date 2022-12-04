@@ -9,7 +9,6 @@ using static ClassLib.Command;
 using Newtonsoft.Json;
 using ClassLib.Strategy;
 using ClassLib.Units;
-using ClassLib.Units.Weapons;
 
 namespace Client
 {
@@ -265,20 +264,7 @@ namespace Client
         {
             // this is the function thats makes the new bullets in this game
 
-            Weapon weaponBullet;
-
-            if (player.GetStrategy() is AttackMachinegun)
-            {
-                weaponBullet = new Machinegun();
-            }
-            else
-            { 
-                if (player.GetStrategy() is AttackTorpedo)
-                    weaponBullet = new Torpedo();
-                else
-                    weaponBullet = new Laser();
-            }
-
+            Weapon weaponBullet = new Weapon();
 
             weaponBullet.direction = direct; // assignment the direction to the bullet
             weaponBullet.bulletLeft = player.Image.Left + (player.Image.Width / 2); // place the bullet to left half of the player

@@ -10,6 +10,6 @@ namespace ClassLib.Strategy
 {
     public interface IStrategy
     {
-        object DoAlgorithm(object weapon, Form form, string playerName, HubConnection hubConnection, int bulletId);
+        object DoAlgorithm(Weapon weapon, Form form, string playerName, HubConnection hubConnection, int bulletId);
     }
 }

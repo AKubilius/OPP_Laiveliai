@@ -1,5 +1,6 @@
-﻿using ClassLib.Units;
-using ClassLib.Units.Weapons;
+﻿using ClassLib.Strategy.Template;
+using ClassLib.Units;
+using ClassLib.Units.Bullet;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,10 @@ namespace ClassLib.Strategy
 {
     public class AttackLaser : IStrategy
     {
-        public object DoAlgorithm(object weapon, Form form, string playerName, HubConnection hubConnection, int bulletId)
+        public object DoAlgorithm(Weapon weapon, Form form, string playerName, HubConnection hubConnection, int bulletId)
         {
-            var laser = weapon as Laser;
-            laser.mkBullet(form, playerName, hubConnection, bulletId);
+            ClientClass.ClientCode(new LaserTemplate(), weapon, form, playerName, hubConnection, bulletId);
+
             return true;
         }
     }

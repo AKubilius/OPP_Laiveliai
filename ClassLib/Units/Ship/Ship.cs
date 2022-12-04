@@ -59,7 +59,7 @@ namespace ClassLib.Units.Ship
             Health.Dispose();
         }
 
-        public void Shoot(object weapon, Form form, string playerName, HubConnection hubConnection, int bulletId)
+        public void Shoot(Weapon weapon, Form form, string playerName, HubConnection hubConnection, int bulletId)
         {
             Strategy.DoAlgorithm(weapon, form, playerName, hubConnection, bulletId);
         }
