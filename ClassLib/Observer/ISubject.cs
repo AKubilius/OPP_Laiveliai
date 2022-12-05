@@ -10,6 +10,6 @@ namespace ClassLib.Observer
     {
         public void Subscribe(Player player);
         public void Unsubscribe(Player player);
-        public Task Notify();
+        public Task Notify(string arg);
     }
 }

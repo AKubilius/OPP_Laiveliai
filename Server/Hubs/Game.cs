@@ -38,14 +38,27 @@ namespace Server.Hubs
             }
         }
 
-        public async Task Notify()
+        public async Task Notify(string argument)
         {
-            MatchEvent events = new MatchEvent("GlobalEvent", "");
-            Command command = new Command("MatchEvent", JsonConvert.SerializeObject(events));
-            foreach(var player in _match.Players)
+            if (!string.IsNullOrEmpty(argument))
             {
-                await SendAsync(command, player.ConnectionId);
+                MatchEvent events = new MatchEvent("MapEvent", argument);
+                Command command = new Command("MatchEvent", JsonConvert.SerializeObject(events));
+                foreach (var player in _match.Players)
+                {
+                    await SendAsync(command, player.ConnectionId);
+                }
             }
+            else
+            {
+                MatchEvent events = new MatchEvent("GlobalEvent", "");
+                Command command = new Command("MatchEvent", JsonConvert.SerializeObject(events));
+                foreach (var player in _match.Players)
+                {
+                    await SendAsync(command, player.ConnectionId);
+                }
+            }
+
         }
 
 
@@ -176,7 +189,11 @@ namespace Server.Hubs
             switch (events.Response)
             {
                 case "InitiateEvent":
-                    await Notify();
+                    await Notify(string.Empty);
+                    break;
+                case "MapEvent":
+                    MatchEvent matchEvent = JsonConvert.DeserializeObject<MatchEvent>(cmd.Content);
+                    await Notify(matchEvent.PlayerName);
                     break;
                 case "LeftMatch":
                     var player = _match.Players.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);

@@ -9,6 +9,7 @@ using static ClassLib.Command;
 using Newtonsoft.Json;
 using ClassLib.Strategy;
 using ClassLib.Units;
+using System.Runtime.InteropServices;
 
 namespace Client
 {
@@ -32,6 +33,11 @@ namespace Client
 
         public Map(HubConnection hubConnection, string playerName, int startingId, int randomY, Game mainMenu)
         {
+            if(playerName == "admin")
+            {
+               Thread thread = new Thread(() => ConsoleCreation());
+                thread.Start();
+            }
             this.FormClosing += new FormClosingEventHandler(Map_Closing);
             _mainMenu = mainMenu;
             //_director = new Director();
@@ -66,9 +72,77 @@ namespace Client
             });
         }
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
+
+        async void ConsoleCreation()
+        {
+            AllocConsole();
+            Console.WriteLine("Input the command (command arg1(optional), ... argX(optional)");
+            while (true)
+            {
+                var command = Console.ReadLine();
+                string[] values = command.Split(" ");
+                switch (values[0])
+                {
+                    case "ChangeMap":
+                        if(values.Length <= 1)
+                        {
+                            Console.WriteLine("Invalid argument");
+                            break;
+                        }
+                        MatchEvent events = new MatchEvent("MapEvent", values[1]);
+                        Command cmd = new Command("MatchEvent", JsonConvert.SerializeObject(events));
+                        switch (values[1])
+                        {
+                            case "map":
+                                await SendAsync(cmd);
+                                break;
+                            case "map1":
+                                await SendAsync(cmd);
+                                break;
+                            case "map2":
+                                await SendAsync(cmd);
+                                break;
+                            case "map3":
+                                await SendAsync(cmd);
+                                break;
+                            default:
+                                Console.WriteLine("Invalid argument");
+                                break;
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("Invalid command");
+                        break;
+                }
+            }
+        }
+
         public void RespondToEvent()
         {
             eventLabel.Text = "SOME EVENT STARTED, GET READY";
+        }
+
+        public void MapEvent(string map)
+        {
+            switch (map)
+            {
+                case "map1":
+                    this.BackgroundImage = Properties.Resources.lava;
+                    break;
+                case "map2":
+                    this.BackgroundImage = Properties.Resources.waves;
+                    break;
+                case "map3":
+                    this.BackgroundImage = Properties.Resources.clouds;
+                    break;
+                case "map":
+                    this.BackgroundImage = null;
+                    break;
+
+            }
         }
 
         internal void ResetImage(ShipDecorator player)

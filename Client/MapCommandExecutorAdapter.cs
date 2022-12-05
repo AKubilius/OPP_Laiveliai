@@ -34,6 +34,9 @@ namespace Client
 
             switch (events.Response)
             {
+                case "MapEvent":
+                    MapEvent(events.PlayerName);
+                    break;
                 case "GlobalEvent":
                     GlobalEvent();
                     break;
@@ -69,6 +72,12 @@ namespace Client
         {
             _map.RespondToEvent();
         }
+
+        private void MapEvent(string argument)
+        {
+            _map.MapEvent(argument);
+        }
+
 
         private void UpdateBulletLocation(Location location)
         {

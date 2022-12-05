@@ -49,6 +49,7 @@ namespace Client
             this.WeaponName.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.WeaponName.Location = new System.Drawing.Point(1464, 749);
             this.WeaponName.Name = "WeaponName";
+            DoubleBuffered = true;
             this.WeaponName.Size = new System.Drawing.Size(108, 19);
             this.WeaponName.TabIndex = 0;
             this.WeaponName.Text = "MachineGun";
