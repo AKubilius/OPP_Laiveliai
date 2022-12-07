@@ -97,7 +97,7 @@ namespace Client
             if (currentBullet.Bounds.IntersectsWith(_map.player.Image.Bounds))
             {
                 if (_map.player.Health.Value > 1)
-                    _map.player.Health.Value -= 5;
+                    _map.player.Health.Value -= location.BulletDamage;
                 _map.Controls.Remove(currentBullet);
             }
         }

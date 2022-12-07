@@ -65,6 +65,7 @@ namespace ClassLib
             public string Facing { get; set; } = string.Empty;
             public string BulletType { get; set; } = string.Empty;
             public int BulletID { get; set; } = int.MinValue;
+            public int BulletDamage { get; set; } = 0;
             public int BulletWidth { get; set; } = 0;
             public int BulletHeight { get; set; } = 0;
             public int XAxis { get; set; }
@@ -90,6 +91,20 @@ namespace ClassLib
                 BulletWidth = bulletSizeWidth;
                 BulletHeight = bulletSizeHeight;
                 BulletType = bulletType;
+                XAxis = xAxis;
+                YAxis = yAxis;
+                Skin = null;
+            }
+
+            public Location(string response, string shipName, int bulletDamage, string bulletType, int bulletID, int bulletSizeWidth, int bulletSizeHeight, int xAxis, int yAxis)
+            {
+                Response = response;
+                ShipName = shipName;
+                BulletID = bulletID;
+                BulletWidth = bulletSizeWidth;
+                BulletHeight = bulletSizeHeight;
+                BulletType = bulletType;
+                BulletDamage = bulletDamage;
                 XAxis = xAxis;
                 YAxis = yAxis;
                 Skin = null;

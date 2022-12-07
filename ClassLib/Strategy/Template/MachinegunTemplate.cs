@@ -14,6 +14,7 @@ namespace ClassLib.Strategy.Template
             _bulletHeight = 5;
             _bulletWidth = 5;
             _bulletSpeed = 20;
+            _bulletDamage = 5;
             _bulletType = "machinegun";
         }
     }

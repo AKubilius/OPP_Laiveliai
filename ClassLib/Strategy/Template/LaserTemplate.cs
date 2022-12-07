@@ -14,6 +14,7 @@ namespace ClassLib.Strategy.Template
             _bulletHeight = 5;
             _bulletWidth = 100;
             _bulletSpeed = 5;
+            _bulletDamage = 2;
             _bulletType = "laser";
         }
     }

@@ -15,8 +15,6 @@ namespace ClassLib.Strategy
         public object DoAlgorithm(Weapon weapon, Form form, string playerName, HubConnection hubConnection, int bulletId)
         {
             ClientClass.ClientCode(new MachinegunTemplate(), weapon, form, playerName, hubConnection, bulletId);
-            //var machinegun = weapon as Machinegun;
-            //machinegun.mkBullet(form, playerName, hubConnection, bulletId);
             return true;
         }
     }

@@ -32,6 +32,7 @@ namespace ClassLib.Strategy.Template
         public int _bulletWidth;
         public int _bulletHeight;
         public int _bulletSpeed;
+        public int _bulletDamage;
         public Color _bulletColor;
         public Size _clientSize;
 
@@ -110,7 +111,7 @@ namespace ClassLib.Strategy.Template
             {
                 bullet.Top += speed; // move the bullet bottom of the screen
             }
-            Location location = new Location("MoveBullet", _playerName, _bulletType, _bulletId, bullet.Size.Width, bullet.Size.Height, bullet.Location.X, bullet.Location.Y);
+            Location location = new Location("MoveBullet", _playerName, _bulletDamage, _bulletType, _bulletId, bullet.Size.Width, bullet.Size.Height, bullet.Location.X, bullet.Location.Y);
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
 
