@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using ClassLib.Strategy;
 using ClassLib.Units;
 using System.Runtime.InteropServices;
+using ClassLib.State;
+using ClassLib.Memento;
 
 namespace Client
 {
@@ -80,6 +82,8 @@ namespace Client
         {
             AllocConsole();
             Console.WriteLine("Input the command (command arg1(optional), ... argX(optional)");
+            MapContext mapContext = new MapContext(new State());
+            MapMemory mapMemory = new MapMemory() { MapMemento = new MapMemento() { State = mapContext.State } };
             while (true)
             {
                 var command = Console.ReadLine();
@@ -92,21 +96,33 @@ namespace Client
                             Console.WriteLine("Invalid argument");
                             break;
                         }
-                        MatchEvent events = new MatchEvent("MapEvent", values[1]);
-                        Command cmd = new Command("MatchEvent", JsonConvert.SerializeObject(events));
                         switch (values[1])
                         {
                             case "map":
-                                await SendAsync(cmd);
+                                mapMemory.MapMemento = mapContext.SaveMemento();
+                                mapContext.State = new State();
+                                await SendAsync(mapContext.GetCommand());
                                 break;
                             case "map1":
-                                await SendAsync(cmd);
+                                mapMemory.MapMemento = mapContext.SaveMemento();
+                                mapContext.State = new LavaState();
+                                await SendAsync(mapContext.GetCommand());
                                 break;
                             case "map2":
-                                await SendAsync(cmd);
+                                mapMemory.MapMemento = mapContext.SaveMemento();
+                                mapContext.State = new WavesState();
+                                await SendAsync(mapContext.GetCommand());
                                 break;
                             case "map3":
-                                await SendAsync(cmd);
+                                mapMemory.MapMemento = mapContext.SaveMemento();
+                                mapContext.State = new CloudState();
+                                await SendAsync(mapContext.GetCommand());
+                                break;
+                            case "previous":
+                                State current = mapContext.State;
+                                mapContext.RestoreMemento(mapMemory.MapMemento);
+                                mapMemory.MapMemento = new MapMemento() { State = current };
+                                await SendAsync(mapContext.GetCommand());
                                 break;
                             default:
                                 Console.WriteLine("Invalid argument");
