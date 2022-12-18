@@ -1,11 +1,12 @@
 ﻿using ClassLib;
 using ClassLib.Units.Ship;
+using Client.Chain;
 using Newtonsoft.Json;
 using static ClassLib.Command;
 
 namespace Client
 {
-    internal class MapCommandExecutorAdapter : CommandExecutor
+    public class MapCommandExecutorAdapter : CommandExecutor
     {
         private readonly Map _map;
 
@@ -94,11 +95,19 @@ namespace Client
             PictureBox currentBullet = _map.bullets[location.BulletID];
             currentBullet.Location = new Point(location.XAxis, location.YAxis);
 
+            int playerHealth = _map.player.Health.Value;
+            int bulletDamage = location.BulletDamage;
+            string playerName = _map.player.Label.ToString();
+
             if (currentBullet.Bounds.IntersectsWith(_map.player.Image.Bounds))
             {
-                if (_map.player.Health.Value > 1)
-                    _map.player.Health.Value -= location.BulletDamage;
                 _map.Controls.Remove(currentBullet);
+
+                ChainHandler damageChecker = new DamageChecker();
+                ChainHandler playerKicker = new PlayerKicker();
+
+                damageChecker.SetSuccessor(playerKicker);
+                damageChecker.ProcessRequest(playerHealth, bulletDamage, playerName, _map);
             }
         }
 
@@ -108,8 +117,9 @@ namespace Client
             _map.ResetImage(_map.flyweightShipFactory.GetShip(location.ShipName));
             opponent.Image.Location = new Point(location.XAxis, location.YAxis);
             opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
-            opponent.Health.Location = new Point(location.XAxis + 6, location.YAxis + 50);
+            opponent.Health.Hide();
             opponent.Label.Text = location.ShipName;
+            opponent.Label.ForeColor = Color.Red;
             switch (location.Facing)
             {
                 case "right":

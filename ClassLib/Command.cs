@@ -62,6 +62,7 @@ namespace ClassLib
         {
             public string Response { get; set; }
             public string ShipName { get; set; }
+            public int PlayerHealth { get; set; } = 0;
             public string Facing { get; set; } = string.Empty;
             public string BulletType { get; set; } = string.Empty;
             public int BulletID { get; set; } = int.MinValue;
@@ -83,10 +84,35 @@ namespace ClassLib
                 Skin = skin;
             }
 
+            public Location(string response, int playerHealth, string shipName, string facing, int xAxis, int yAxis, Skin skin)
+            {
+                Response = response;
+                PlayerHealth = playerHealth;
+                ShipName = shipName;
+                Facing = facing;
+                XAxis = xAxis;
+                YAxis = yAxis;
+                Skin = skin;
+            }
+
             public Location(string response, string shipName, string bulletType, int bulletID, int bulletSizeWidth, int bulletSizeHeight, int xAxis, int yAxis)
             {
                 Response = response;
                 ShipName = shipName;
+                BulletID = bulletID;
+                BulletWidth = bulletSizeWidth;
+                BulletHeight = bulletSizeHeight;
+                BulletType = bulletType;
+                XAxis = xAxis;
+                YAxis = yAxis;
+                Skin = null;
+            }
+
+            public Location(string response, int playerHealth, string shipName, string bulletType, int bulletID, int bulletSizeWidth, int bulletSizeHeight, int xAxis, int yAxis)
+            {
+                Response = response;
+                ShipName = shipName;
+                PlayerHealth = playerHealth;
                 BulletID = bulletID;
                 BulletWidth = bulletSizeWidth;
                 BulletHeight = bulletSizeHeight;

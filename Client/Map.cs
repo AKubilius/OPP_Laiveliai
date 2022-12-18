@@ -17,10 +17,10 @@ namespace Client
 {
     public partial class Map : Form, ClassLib.Observer.IObserver
     {
-        HubConnection _hubConnection;
+        public HubConnection _hubConnection;
         public string _playerName;
         public Ship player;
-        Game _mainMenu;
+        public Game _mainMenu;
         internal Dictionary<int, PictureBox> bullets;
         Bitmap _image;
         Keys _key;
@@ -42,8 +42,7 @@ namespace Client
             }
             this.FormClosing += new FormClosingEventHandler(Map_Closing);
             _mainMenu = mainMenu;
-            //_director = new Director();
-            //_shipBuilder = new ShipBuilder();
+
             bullets = new Dictionary<int, PictureBox>();
             flyweightShipFactory = new FlyweightShipFactory(this);
 
@@ -233,7 +232,7 @@ namespace Client
                 player.Health.Top += Math.Min(ClientSize.Height - player.Image.Top, speed);
             }
 
-            Location location = new Location("MovePlayer", _playerName, facing, player.Image.Location.X, player.Image.Location.Y, _skin);
+            Location location = new Location("MovePlayer", player.Health.Value, _playerName, facing, player.Image.Location.X, player.Image.Location.Y, _skin);
 
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
@@ -363,7 +362,7 @@ namespace Client
             player.Shoot(weaponBullet, this, _playerName, _hubConnection, DateTime.UtcNow.GetHashCode());
         }
 
-        private async void Map_Closing(object sender, CancelEventArgs e)
+        public async void Map_Closing(object sender, CancelEventArgs e)
         {
             MatchEvent match = new MatchEvent("LeftMatch", _playerName);
             Command cmd = new Command("MatchEvent", JsonConvert.SerializeObject(match));
@@ -371,5 +370,14 @@ namespace Client
 
             _mainMenu.Visible = true;
         }
+
+        //public async void Map_Closing(object sender, CancelEventArgs e)
+        //{
+        //    MatchEvent match = new MatchEvent("LeftMatch", _playerName);
+        //    Command cmd = new Command("MatchEvent", JsonConvert.SerializeObject(match));
+        //    await SendAsync(cmd);
+
+        //    _mainMenu.Visible = true;
+        //}
     }
 }
