@@ -12,6 +12,8 @@ using ClassLib.Units;
 using System.Runtime.InteropServices;
 using ClassLib.State;
 using ClassLib.Memento;
+using ClassLib.Composite;
+using System.Numerics;
 
 namespace Client
 {
@@ -233,6 +235,7 @@ namespace Client
             }
 
             Location location = new Location("MovePlayer", player.Health.Value, _playerName, facing, player.Image.Location.X, player.Image.Location.Y, _skin);
+            player.WholeArmoury.Move();
 
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
@@ -245,17 +248,21 @@ namespace Client
                 switch (e.KeyCode)
                 {
                     case Keys.Left:
+                        player.Facing = "left";
                         ResetImage(flyweightShipFactory.GetShip(_playerName));
                         player.Image.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
                         break;
                     case Keys.Right:
+                        player.Facing = "right";
                         ResetImage(flyweightShipFactory.GetShip(_playerName));
                         break;
                     case Keys.Down:
+                        player.Facing = "down";
                         ResetImage(flyweightShipFactory.GetShip(_playerName));
                         player.Image.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
                         break;
                     case Keys.Up:
+                        player.Facing = "up";
                         ResetImage(flyweightShipFactory.GetShip(_playerName));
                         player.Image.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
                         break;
@@ -316,6 +323,61 @@ namespace Client
 
                 Command cmd = new Command("MatchEvent", JsonConvert.SerializeObject(events));
                 await SendAsync(cmd);
+            }
+            if (e.KeyCode == Keys.A)
+            {
+                Armour armour = new Armour("All", _playerName);
+
+                Command cmd = new Command("Armour", JsonConvert.SerializeObject(armour));
+                await SendAsync(cmd);
+                FrontArmour fA = new FrontArmour("Front Ram", player, Properties.Resources.front_armour);
+                BackArmour bA = new BackArmour("Back Armour", player, Properties.Resources.back_armour);
+                MiddleArmour mA = new MiddleArmour("Middle Armour", player, Properties.Resources.middle_armour);
+                
+                Controls.Add(bA._image);
+                Controls.Add(fA._image);
+                Controls.Add(mA._image);
+                Controls.SetChildIndex(bA._image, 0);
+                Controls.SetChildIndex(fA._image, 0);
+                Controls.SetChildIndex(mA._image, 0);
+                ((Armoury)player.WholeArmoury.GetChild("Back Armoury")).AddArmoury(bA);
+                ((Armoury)player.WholeArmoury.GetChild("Front Armoury")).AddArmoury(fA);
+                ((Armoury)player.WholeArmoury.GetChild("Middle Armoury")).AddArmoury(mA);
+            }
+
+            if (e.KeyCode == Keys.F)
+            {
+                Armour armour = new Armour("Front", _playerName);
+
+                Command cmd = new Command("Armour", JsonConvert.SerializeObject(armour));
+                await SendAsync(cmd);
+                FrontArmour fA = new FrontArmour("Front Ram", player, Properties.Resources.front_armour);
+                Controls.Add(fA._image);
+                Controls.SetChildIndex(fA._image, 0);
+                ((Armoury)player.WholeArmoury.GetChild("Front Armoury")).AddArmoury(fA);
+            }
+
+            if (e.KeyCode == Keys.B)
+            {
+                Armour armour = new Armour("Back", _playerName);
+
+                Command cmd = new Command("Armour", JsonConvert.SerializeObject(armour));
+                await SendAsync(cmd);
+                BackArmour bA = new BackArmour("Back Armour", player, Properties.Resources.back_armour);
+                Controls.Add(bA._image);
+                Controls.SetChildIndex(bA._image, 0);
+                ((Armoury)player.WholeArmoury.GetChild("Back Armoury")).AddArmoury(bA);
+            }
+            if (e.KeyCode == Keys.M)
+            {
+                Armour armour = new Armour("Middle", _playerName);
+
+                Command cmd = new Command("Armour", JsonConvert.SerializeObject(armour));
+                await SendAsync(cmd);
+                MiddleArmour mA = new MiddleArmour("Middle Armour", player, Properties.Resources.middle_armour);
+                Controls.Add(mA._image);
+                Controls.SetChildIndex(mA._image, 0);
+                ((Armoury)player.WholeArmoury.GetChild("Middle Armoury")).AddArmoury(mA);
             }
 
         }

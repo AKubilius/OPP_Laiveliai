@@ -43,23 +43,17 @@ namespace ClassLib
 
         }
 
-        public struct PlayerHit
+        public struct Armour
         {
-            public string Response { get; set; }
-            public Player Player { get; set; }
-            public Ship Ship { get; set; }
-            public int xAxis { get; set; }
-            public int yAxis { get; set; }
+            public string Type { get; set; }
+            public string PlayerName { get; set; }
 
-
-            public PlayerHit(string response, Player player, Ship ship, int xaxis, int yaxis)
+            public Armour(string type, string playerName)
             {
-                Response = response;
-                Player = player;
-                Ship = ship;
-                xAxis = xaxis;
-                yAxis = yaxis;
+                Type = type;
+                PlayerName = playerName;
             }
+
         }
 
         public struct Matchmaking

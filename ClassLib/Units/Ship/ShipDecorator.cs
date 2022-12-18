@@ -1,4 +1,6 @@
-﻿namespace ClassLib.Units.Ship
+﻿using ClassLib.Composite;
+
+namespace ClassLib.Units.Ship
 {
     public abstract class ShipDecorator : IShip
     {

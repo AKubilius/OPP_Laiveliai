@@ -1,6 +1,8 @@
-﻿using ClassLib.Strategy;
+﻿using ClassLib.Composite;
+using ClassLib.Strategy;
 using ClassLib.Units.Bullet;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Numerics;
 using System.Windows.Forms;
 
 namespace ClassLib.Units.Ship
@@ -9,8 +11,12 @@ namespace ClassLib.Units.Ship
     {
         public ProgressBar Health { get; set; }
 
+        public Armoury WholeArmoury { get; set; }
+
         public int Speed { get; set; }
         public int Power { get; set; }
+
+        public string Facing { get; set; }
 
         public IStrategy Strategy { get; set; }
 
@@ -40,7 +46,13 @@ namespace ClassLib.Units.Ship
 
         public Ship() 
         {
-
+            WholeArmoury = new Armoury("Full Armoury");
+            Armoury frontArmoury = new Armoury("Front Armoury");
+            Armoury middleArmoury = new Armoury("Middle Armoury");
+            Armoury backArmoury = new Armoury("Back Armoury");
+            WholeArmoury.AddArmoury(frontArmoury);
+            WholeArmoury.AddArmoury(middleArmoury);
+            WholeArmoury.AddArmoury(backArmoury);
         }
 
         public void SetStrategy(IStrategy strategy)

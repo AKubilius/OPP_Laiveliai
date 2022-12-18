@@ -14,4 +14,12 @@
     <ProjectReference Include="..\ClassLib\ClassLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\MANTAS\Desktop\LAIVELIAI\Server\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\MANTAS\Desktop\LAIVELIAI\Server\.editorconfig" />
+  </ItemGroup>
+
 </Project>

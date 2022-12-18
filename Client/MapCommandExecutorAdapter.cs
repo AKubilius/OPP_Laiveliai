@@ -1,8 +1,11 @@
 ﻿using ClassLib;
+using ClassLib.Composite;
 using ClassLib.Units.Ship;
 using Client.Chain;
 using Client.Properties;
 using Newtonsoft.Json;
+using System.Numerics;
+using System.Windows.Forms;
 using static ClassLib.Command;
 
 namespace Client
@@ -22,6 +25,9 @@ namespace Client
             {
                 case "Location":
                     UpdateLocation(command);
+                    break;
+                case "Armour":
+                    AddArmour(command);
                     break;
                 case "MatchEvent":
                     Events(command);
@@ -48,7 +54,46 @@ namespace Client
             }
         }
 
-
+        private void AddArmour(Command cmd)
+        {
+            Armour armour = JsonConvert.DeserializeObject<Armour>(cmd.Content);
+            Ship opponent = _map.flyweightShipFactory.GetShip(armour.PlayerName).Ship;
+            switch (armour.Type)
+            {
+                case "All":
+                    FrontArmour fA = new FrontArmour("Front Ram", opponent, Properties.Resources.front_armour);
+                    BackArmour bA = new BackArmour("Back Armour", opponent, Properties.Resources.back_armour);
+                    MiddleArmour mA = new MiddleArmour("Middle Armour", opponent, Properties.Resources.middle_armour);
+                    _map.Controls.Add(bA._image);
+                    _map.Controls.Add(fA._image);
+                    _map.Controls.Add(mA._image);
+                    _map.Controls.SetChildIndex(bA._image, 0);
+                    _map.Controls.SetChildIndex(fA._image, 0);
+                    _map.Controls.SetChildIndex(mA._image, 0);
+                    ((Armoury)opponent.WholeArmoury.GetChild("Back Armoury")).AddArmoury(bA);
+                    ((Armoury)opponent.WholeArmoury.GetChild("Front Armoury")).AddArmoury(fA);
+                    ((Armoury)opponent.WholeArmoury.GetChild("Middle Armoury")).AddArmoury(mA);
+                    break;
+                case "Front":
+                    fA = new FrontArmour("Front Ram", opponent, Properties.Resources.front_armour);
+                    _map.Controls.Add(fA._image);
+                    _map.Controls.SetChildIndex(fA._image, 0);
+                    ((Armoury)opponent.WholeArmoury.GetChild("Front Armoury")).AddArmoury(fA);
+                    break;
+                case "Back":
+                    bA = new BackArmour("Back Armour", opponent, Properties.Resources.back_armour);
+                    _map.Controls.Add(bA._image);
+                    _map.Controls.SetChildIndex(bA._image, 0);
+                    ((Armoury)opponent.WholeArmoury.GetChild("Back Armoury")).AddArmoury(bA);
+                    break;
+                case "Middle":
+                    mA = new MiddleArmour("Middle Armour", opponent, Properties.Resources.middle_armour);
+                    _map.Controls.Add(mA._image);
+                    _map.Controls.SetChildIndex(mA._image, 0);
+                    ((Armoury)opponent.WholeArmoury.GetChild("Middle Armoury")).AddArmoury(mA);
+                    break;
+            }
+        }
         private void UpdateLocation(Command cmd)
         {
             Location location = JsonConvert.DeserializeObject<Location>(cmd.Content);
@@ -165,6 +210,9 @@ namespace Client
             _map.ResetImage(_map.flyweightShipFactory.GetShip(location.ShipName));
             opponent.Image.Location = new Point(location.XAxis, location.YAxis);
             opponent.Label.Location = new Point(location.XAxis, location.YAxis - 50);
+            opponent.Health.Location = new Point(location.XAxis + 6, location.YAxis + 50);
+            opponent.Facing = location.Facing;
+            opponent.WholeArmoury.Move();
             opponent.Health.Hide();
             opponent.Label.Text = location.ShipName;
             opponent.Label.ForeColor = Color.Red;
