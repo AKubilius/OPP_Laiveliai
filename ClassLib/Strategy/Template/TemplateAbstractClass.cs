@@ -115,7 +115,7 @@ namespace ClassLib.Strategy.Template
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
 
-            if (bullet.Left < -50 || bullet.Left > _clientSize.Width || bullet.Top < 0 || bullet.Top > _clientSize.Height)
+            if (bullet.Left < -200 || bullet.Left > _clientSize.Width + 200 || bullet.Top < -200 || bullet.Top > _clientSize.Height + 200)
             {
                 tm.Stop(); // stop the timer
                 tm.Dispose(); // dispose the timer event and component from the program
