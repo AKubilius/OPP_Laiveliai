@@ -115,13 +115,23 @@ namespace ClassLib.Strategy.Template
             Command cmd = new Command("Location", JsonConvert.SerializeObject(location));
             await SendAsync(cmd);
 
-            if (bullet.Left < -200 || bullet.Left > _clientSize.Width + 200 || bullet.Top < -200 || bullet.Top > _clientSize.Height + 200)
+            try
             {
-                tm.Stop(); // stop the timer
-                tm.Dispose(); // dispose the timer event and component from the program
-                bullet.Dispose(); // dispose the bullet
-                tm = null; // nullify the timer object
-                bullet = null; // nullify the bullet object
+                if(bullet != null)
+                {
+                    if (bullet.Left < -200 || bullet.Left > _clientSize.Width + 200 || bullet.Top < -200 || bullet.Top > _clientSize.Height + 200)
+                    {
+                        tm.Stop(); // stop the timer
+                        tm.Dispose(); // dispose the timer event and component from the program
+                        bullet.Dispose(); // dispose the bullet
+                        tm = null; // nullify the timer object
+                        bullet = null; // nullify the bullet object
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using ClassLib;
 using ClassLib.Units.Ship;
 using Client.Chain;
+using Client.Properties;
 using Newtonsoft.Json;
 using static ClassLib.Command;
 
@@ -57,11 +58,58 @@ namespace Client
                 case "UpdateLocation":
                     UpdateLocation(location);
                     break;
-
                 case "UpdateBulletLocation":
                     UpdateBulletLocation(location);
                     break;
+                case "UpdateParticleLocation":
+                    UpdateParticleLocation(location);
+                    break;
             }
+        }
+
+        private void UpdateParticleLocation(Location location)
+        {
+             if(location.PlayerHealth > 5)
+             {
+                PictureBox boom = CreateBoom(location.XAxis, location.YAxis);
+
+                try
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        _map.Invoke(new Action(() => AddBoom(boom, _map)));
+                        Thread.Sleep(1250);
+                        _map.Invoke(new Action(() => RemoveBoom(boom, _map)));
+                    });
+                }
+                catch (Exception e)
+                {
+
+                }
+             }
+        }
+
+        public PictureBox CreateBoom(int xAxis, int yAxis)
+        {
+            PictureBox boom = new PictureBox();
+            boom.Size = new Size(100, 100);
+            boom.Location = new Point(xAxis, yAxis);
+            boom.SizeMode = PictureBoxSizeMode.StretchImage;
+            boom.BackColor = Color.Transparent;
+            Bitmap gif = Resources.boomHit;
+            boom.Image = (Image)gif;
+            return boom;
+        }
+
+        public void AddBoom(PictureBox boom, Map map)
+        {
+            map.Controls.Add(boom);
+            boom.BringToFront();
+        }
+
+        public void RemoveBoom(PictureBox boomImage, Map map)
+        {
+            map.Controls.Remove(boomImage);
         }
 
         private void LeftMatch(string playerName)

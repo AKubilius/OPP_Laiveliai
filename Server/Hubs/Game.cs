@@ -1,5 +1,6 @@
 ﻿using ClassLib;
 using ClassLib.Observer;
+using ClassLib.Visitor;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Win32;
@@ -27,6 +28,7 @@ namespace Server.Hubs
             lock (_lockerMatch)
             {
                 _match.Players.Add(player);
+                Console.WriteLine("Player joined the match! Name:" + player.Name + "| ID[" + player.ConnectionId + "] | Total players: " + _match.Players.Count);
             }
         }
 
@@ -35,6 +37,15 @@ namespace Server.Hubs
             lock (_lockerMatch)
             {
                 _match.Players.Remove(player);
+                Console.WriteLine("Player left the match! Name:" + player.Name + " | ID[" + player.ConnectionId + "] | Total players: " + _match.Players.Count);
+            }
+        }
+
+        public void Accept(IVisitor visitor)
+        {
+            foreach(var player in _playersInMatchmaking)
+            {
+                player.Accept(visitor);
             }
         }
 
@@ -96,7 +107,7 @@ namespace Server.Hubs
             await SendAllAsync(cmd);
         }
 
-        private async Task SendAsync(Command cmd, string callerID)
+        public async Task SendAsync(Command cmd, string callerID)
         {
             await Clients.Client(callerID).SendAsync("Message", cmd);
         }
@@ -242,6 +253,10 @@ namespace Server.Hubs
                     answer = new Command("Location", JsonConvert.SerializeObject(location));
                     await SendAllExeptAsync(answer, Context.ConnectionId);
                     break;
+                case "MoveParticle":
+                    Accept(new ParticleVisitor());
+                    SendAsyncMessage(location);
+                    break;
             }
 
         }
@@ -260,6 +275,13 @@ namespace Server.Hubs
                 case "LeaveMatchmaking":
                     break;
             }
+        }
+
+        public async void SendAsyncMessage(Location location)
+        {
+            location.Response = "UpdateParticleLocation";
+            Command answer = new Command("Location", JsonConvert.SerializeObject(location));
+            await SendAllAsync(answer);
         }
 
         public async Task JoinMatchmaking(string ConnectionId)
@@ -298,5 +320,7 @@ namespace Server.Hubs
             answer = new Command("Matchmaking", JsonConvert.SerializeObject(matchmaking));
             await SendAsync(answer, player.ConnectionId);
         }
+
+
     }
 }

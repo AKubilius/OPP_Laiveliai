@@ -43,6 +43,25 @@ namespace ClassLib
 
         }
 
+        public struct PlayerHit
+        {
+            public string Response { get; set; }
+            public Player Player { get; set; }
+            public Ship Ship { get; set; }
+            public int xAxis { get; set; }
+            public int yAxis { get; set; }
+
+
+            public PlayerHit(string response, Player player, Ship ship, int xaxis, int yaxis)
+            {
+                Response = response;
+                Player = player;
+                Ship = ship;
+                xAxis = xaxis;
+                yAxis = yaxis;
+            }
+        }
+
         public struct Matchmaking
         {
             public string Response { get; set; }
@@ -93,6 +112,16 @@ namespace ClassLib
                 XAxis = xAxis;
                 YAxis = yAxis;
                 Skin = skin;
+            }
+
+            public Location(string response, int playerHealth, string shipName, int xAxis, int yAxis)
+            {
+                Response = response;
+                PlayerHealth = playerHealth;
+                ShipName = shipName;
+                XAxis = xAxis;
+                YAxis = yAxis;
+                Skin = null;
             }
 
             public Location(string response, string shipName, string bulletType, int bulletID, int bulletSizeWidth, int bulletSizeHeight, int xAxis, int yAxis)

@@ -35,7 +35,7 @@ namespace Client
 
         public Map(HubConnection hubConnection, string playerName, int startingId, int randomY, Game mainMenu)
         {
-            if(playerName == "admin")
+            if (playerName == "admin")
             {
                Thread thread = new Thread(() => ConsoleCreation());
                 thread.Start();
@@ -61,7 +61,7 @@ namespace Client
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
 
-
+            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 
             _hubConnection = hubConnection;
 
@@ -370,14 +370,5 @@ namespace Client
 
             _mainMenu.Visible = true;
         }
-
-        //public async void Map_Closing(object sender, CancelEventArgs e)
-        //{
-        //    MatchEvent match = new MatchEvent("LeftMatch", _playerName);
-        //    Command cmd = new Command("MatchEvent", JsonConvert.SerializeObject(match));
-        //    await SendAsync(cmd);
-
-        //    _mainMenu.Visible = true;
-        //}
     }
 }
