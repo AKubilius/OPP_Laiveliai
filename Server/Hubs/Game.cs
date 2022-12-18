@@ -1,5 +1,6 @@
 ﻿using ClassLib;
 using ClassLib.Observer;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Win32;
@@ -77,6 +78,9 @@ namespace Server.Hubs
                     break;
                 case "Location":
                     await Location(cmd);
+                    break;
+                case "Armour":
+                    await Armours(cmd);
                     break;
             }
         }
@@ -244,6 +248,11 @@ namespace Server.Hubs
                     break;
             }
 
+        }
+
+        public async Task Armours(Command cmd)
+        {
+            await SendAllExeptAsync(cmd, Context.ConnectionId);
         }
 
         public async Task Matchmaking(Command cmd)

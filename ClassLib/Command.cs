@@ -43,6 +43,19 @@ namespace ClassLib
 
         }
 
+        public struct Armour
+        {
+            public string Type { get; set; }
+            public string PlayerName { get; set; }
+
+            public Armour(string type, string playerName)
+            {
+                Type = type;
+                PlayerName = playerName;
+            }
+
+        }
+
         public struct Matchmaking
         {
             public string Response { get; set; }
